@@ -15,7 +15,10 @@
       "Bash(git reset:*)",
       "Bash(npx vercel:*)",
       "WebFetch(domain:frontend-1qw1rmb74-aks129s-projects.vercel.app)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "WebFetch(domain:frontend-1b2weygs5-aks129s-projects.vercel.app)",
+      "Bash(npm run lint)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

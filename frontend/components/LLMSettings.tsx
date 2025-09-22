@@ -233,7 +233,7 @@ export default function LLMSettings({ data, updateData }: LLMSettingsProps) {
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div>
               <div className="text-sm font-medium text-gray-900">Retry on Validation Failure</div>
-              <div className="text-sm text-gray-500">Automatically retry if output doesn't match schema</div>
+              <div className="text-sm text-gray-500">Automatically retry if output doesn&apos;t match schema</div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input

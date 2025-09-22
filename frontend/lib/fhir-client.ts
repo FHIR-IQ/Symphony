@@ -4,12 +4,13 @@
 
 export interface FHIRResource {
   resourceType: string
-  id: string
+  id?: string
   [key: string]: any
 }
 
 export interface Bundle {
   resourceType: 'Bundle'
+  id?: string
   type: string
   entry?: Array<{
     resource: FHIRResource

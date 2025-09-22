@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerFHIRClient } from '../../../lib/fhir-client'
+import { createServerFHIRClient } from '../../../../lib/fhir-client'
 
 export async function GET(
   request: NextRequest,

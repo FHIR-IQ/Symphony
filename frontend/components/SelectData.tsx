@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { ingestData } from '../lib/api'
+import { DEMO_MODE } from '../lib/demo-data'
 
 interface SelectDataProps {
   data: any
@@ -60,31 +62,23 @@ export default function SelectData({ data, updateData }: SelectDataProps) {
     setIngestResult(null)
 
     try {
-      const response = await fetch('/api/ingest', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          sourceBaseUrl: data.sourceBaseUrl,
-          patientId: data.patientId,
-          resources: data.selectedResources
-        })
+      const result = await ingestData({
+        sourceBaseUrl: data.sourceBaseUrl,
+        patientId: data.patientId,
+        resources: data.selectedResources
       })
 
-      const result = await response.json()
-
-      if (response.ok) {
-        setIngestResult(result)
-        updateData({
-          patientReference: result.patientReference,
-          ingestResult: result
-        })
+      setIngestResult(result)
+      updateData({
+        patientReference: result.patientReference,
+        ingestResult: result
+      })
+    } catch (error: any) {
+      if (DEMO_MODE) {
+        setIngestError('Demo mode: ' + (error.message || 'Network simulation error'))
       } else {
-        setIngestError(result.detail || 'Failed to ingest data')
+        setIngestError('Network error: Unable to reach backend. Please ensure services are running.')
       }
-    } catch (error) {
-      setIngestError('Network error: Unable to reach backend. Please ensure services are running.')
     } finally {
       setIsIngesting(false)
     }
@@ -108,7 +102,14 @@ export default function SelectData({ data, updateData }: SelectDataProps) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold mb-4">Step 1: Select Data Source</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold mb-4">Step 1: Select Data Source</h2>
+        {DEMO_MODE && (
+          <div className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full">
+            🎭 Demo Mode
+          </div>
+        )}
+      </div>
 
       {/* Data Source Selection */}
       <div className="space-y-3">

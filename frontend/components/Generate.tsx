@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { generateSummary } from '../lib/api'
+import { DEMO_MODE } from '../lib/demo-data'
 
 interface GenerateProps {
   data: any
@@ -115,42 +117,22 @@ export default function Generate({ data, updateData }: GenerateProps) {
         temperature: data.temperature || 0.0
       }
 
-      const response = await fetch('/api/summarize', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
+      const result = await generateSummary(payload)
+
+      // Validate the summary contract
+      const validation = validateSummaryContract(result)
+      setValidationStatus(validation)
+
+      updateData({
+        generatedSummary: result,
+        summaryValidation: validation
       })
-
-      const result = await response.json()
-
-      if (response.ok) {
-        // Validate the summary contract
-        const validation = validateSummaryContract(result)
-        setValidationStatus(validation)
-
-        updateData({
-          generatedSummary: result,
-          summaryValidation: validation
-        })
+    } catch (error: any) {
+      if (DEMO_MODE) {
+        setGenerateError('Demo mode: ' + (error.message || 'Network simulation error'))
       } else {
-        if (response.status === 404) {
-          setGenerateError('Patient not found in HAPI. Please re-run data ingestion.')
-        } else if (response.status === 422) {
-          setGenerateError('LLM validation failed: ' + (result.detail?.message || result.detail))
-        } else if (response.status === 500) {
-          if (result.detail?.includes('MODEL_PROVIDER')) {
-            setGenerateError('LLM provider not configured. Please set MODEL_PROVIDER environment variable.')
-          } else {
-            setGenerateError('Server error: ' + (result.detail || 'Unknown error'))
-          }
-        } else {
-          setGenerateError(result.detail || 'Failed to generate summary')
-        }
+        setGenerateError('Network error: Unable to reach backend. Please ensure services are running.')
       }
-    } catch (error) {
-      setGenerateError('Network error: Unable to reach backend. Please ensure services are running.')
     } finally {
       setIsGenerating(false)
     }

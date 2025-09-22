@@ -7,7 +7,11 @@
       "Bash(python -m pytest tests/test_contracts.py::TestSummaryContractValidation::test_valid_summary_contract -v)",
       "Bash(python:*)",
       "Bash(git checkout:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm install)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []

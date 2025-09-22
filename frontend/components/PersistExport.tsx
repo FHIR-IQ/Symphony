@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { materializeSummary } from '../lib/api'
+import { DEMO_MODE } from '../lib/demo-data'
 
 interface PersistExportProps {
   data: any
@@ -34,24 +36,15 @@ export default function PersistExport({ data, updateData }: PersistExportProps) 
         sourceBundleRef: data.ingestResult?.bundleId
       }
 
-      const response = await fetch('/api/materialize', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      })
-
-      const result = await response.json()
-
-      if (response.ok) {
-        setMaterializeResult(result)
-        updateData({ materializeResult: result })
+      const result = await materializeSummary(payload)
+      setMaterializeResult(result)
+      updateData({ materializeResult: result })
+    } catch (error: any) {
+      if (DEMO_MODE) {
+        setMaterializeError('Demo mode: ' + (error.message || 'Network simulation error'))
       } else {
-        setMaterializeError(result.detail || 'Failed to materialize summary')
+        setMaterializeError('Network error: Unable to reach backend. Please ensure services are running.')
       }
-    } catch (error) {
-      setMaterializeError('Network error: Unable to reach backend. Please ensure services are running.')
     } finally {
       setIsMaterializing(false)
     }

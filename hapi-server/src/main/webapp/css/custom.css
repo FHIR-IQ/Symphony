@@ -1,0 +1,98 @@
+/* Custom styling for Symphony FHIR Server */
+
+.jumbotron {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-bottom: 0;
+    border-radius: 0;
+}
+
+.jumbotron h1 {
+    color: white;
+}
+
+.jumbotron .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.jumbotron .lead {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1em;
+}
+
+.jumbotron ul {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.jumbotron .btn {
+    margin: 2px;
+}
+
+/* Navigation customization */
+.navbar-brand {
+    font-weight: bold;
+}
+
+/* Resource table styling */
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Badge styling for resource types */
+.badge-composition {
+    background-color: #17a2b8;
+}
+
+.badge-patient {
+    background-color: #28a745;
+}
+
+.badge-observation {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+/* Footer styling */
+.footer {
+    background-color: #f8f9fa;
+    padding: 20px 0;
+    margin-top: 40px;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Custom alerts */
+.alert-symphony {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+/* IPS document styling */
+.ips-document {
+    border-left: 4px solid #007bff;
+    padding-left: 15px;
+    margin: 10px 0;
+}
+
+.ips-section {
+    background-color: #f8f9fa;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 4px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .jumbotron h1 {
+        font-size: 2em;
+    }
+
+    .jumbotron .lead {
+        font-size: 1em;
+    }
+
+    .btn-lg {
+        padding: 8px 16px;
+        font-size: 1em;
+    }
+}

@@ -1,0 +1,64 @@
+<div th:fragment="banner" class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="jumbotron">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <h1>
+                                <i class="fa fa-fire"></i>
+                                Symphony FHIR Server
+                                <small class="text-muted">powered by HAPI FHIR</small>
+                            </h1>
+                        </div>
+                        <div class="col-sm-4 text-right">
+                            <img src="/img/symphony-logo.png" alt="Symphony AI" style="max-height: 60px;" class="img-responsive" th:if="${false}"/>
+                        </div>
+                    </div>
+
+                    <p class="lead">
+                        This FHIR server hosts AI-generated clinical summaries and IPS (International Patient Summary) documents
+                        created by <strong>Symphony AI</strong>. Browse and explore FHIR resources, including IPS-compliant
+                        Composition documents with rich clinical narratives.
+                    </p>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p>
+                                <strong>Features:</strong>
+                            </p>
+                            <ul>
+                                <li>FHIR R4 compliant server</li>
+                                <li>IPS (International Patient Summary) support</li>
+                                <li>AI-generated clinical narratives</li>
+                                <li>RESTful API with search capabilities</li>
+                                <li>Web-based resource browser</li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <p>
+                                <strong>Quick Links:</strong>
+                            </p>
+                            <p>
+                                <a class="btn btn-primary btn-lg" href="/fhir/Composition" role="button">
+                                    <i class="fa fa-list"></i> Browse Compositions
+                                </a>
+                                <a class="btn btn-success btn-lg" href="/fhir/Patient" role="button">
+                                    <i class="fa fa-user"></i> View Patients
+                                </a>
+                            </p>
+                            <p>
+                                <a class="btn btn-info" href="/fhir/metadata" role="button">
+                                    <i class="fa fa-info-circle"></i> Server Capabilities
+                                </a>
+                                <a class="btn btn-default" href="https://github.com/FHIR-IQ/Symphony" role="button">
+                                    <i class="fa fa-github"></i> Symphony AI Project
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

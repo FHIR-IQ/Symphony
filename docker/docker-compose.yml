@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  hapi:
+    image: hapiproject/hapi:latest
+    container_name: symphony-hapi
+    ports:
+      - "8080:8080"
+    environment:
+      - hapi.fhir.fhir_version=R4
+    volumes:
+      - ./hapi-config:/config
+    networks:
+      - symphony-network
+
+  api:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: symphony-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - hapi
+    environment:
+      - HAPI_BASE=http://hapi:8080/fhir
+    env_file:
+      - ../.env
+    volumes:
+      - ../backend:/app
+    networks:
+      - symphony-network
+
+  web:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: symphony-web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    environment:
+      - BACKEND_URL=http://api:8000
+    env_file:
+      - ../.env
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - symphony-network
+
+networks:
+  symphony-network:
+    driver: bridge

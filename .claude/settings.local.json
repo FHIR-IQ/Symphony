@@ -1,7 +1,21 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git merge:*)"
+      "Bash(chmod:*)",
+      "Bash(python -m pytest tests/ -v --tb=short)",
+      "Bash(python -m pytest tests/test_contracts.py -v --tb=short)",
+      "Bash(python -m pytest tests/test_contracts.py::TestSummaryContractValidation::test_valid_summary_contract -v)",
+      "Bash(python:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(npm install)",
+      "Bash(git reset:*)",
+      "Bash(npx vercel:*)",
+      "WebFetch(domain:frontend-1qw1rmb74-aks129s-projects.vercel.app)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

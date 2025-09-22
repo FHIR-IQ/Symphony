@@ -1,0 +1,200 @@
+{
+  "resourceType": "Bundle",
+  "id": "symphony-sample-data",
+  "type": "transaction",
+  "entry": [
+    {
+      "request": {
+        "method": "PUT",
+        "url": "Patient/symphony-demo-patient-001"
+      },
+      "resource": {
+        "resourceType": "Patient",
+        "id": "symphony-demo-patient-001",
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Johnson",
+            "given": ["Sarah", "Marie"]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "email",
+            "value": "sarah.johnson@example.com"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1975-03-15",
+        "address": [
+          {
+            "use": "home",
+            "line": ["123 Demo Street"],
+            "city": "Sample City",
+            "state": "CA",
+            "postalCode": "90210",
+            "country": "US"
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "url": "Composition/symphony-ips-demo-001"
+      },
+      "resource": {
+        "resourceType": "Composition",
+        "id": "symphony-ips-demo-001",
+        "status": "final",
+        "type": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "60591-5",
+              "display": "Patient Summary Document"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                "code": "AI",
+                "display": "AI Generated"
+              }
+            ]
+          }
+        ],
+        "subject": {
+          "reference": "Patient/symphony-demo-patient-001"
+        },
+        "date": "2024-01-15T10:30:00Z",
+        "author": [
+          {
+            "display": "Symphony AI Clinical Summary Generator"
+          }
+        ],
+        "title": "International Patient Summary - AI Generated",
+        "section": [
+          {
+            "title": "Active Problems",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "11450-4",
+                  "display": "Problem list - Reported"
+                }
+              ]
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h3>Active Problems</h3><table border=\"1\"><thead><tr><th>Problem</th><th>Onset Date</th><th>Codes</th></tr></thead><tbody><tr><td>Type 2 Diabetes Mellitus</td><td>2018-03-15</td><td>ICD-10: E11.9</td></tr><tr><td>Essential Hypertension</td><td>2019-06-22</td><td>ICD-10: I10</td></tr><tr><td>Hyperlipidemia</td><td>2020-01-10</td><td>ICD-10: E78.5</td></tr></tbody></table></div>"
+            }
+          },
+          {
+            "title": "Medication Summary",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "10160-0",
+                  "display": "History of Medication use Narrative"
+                }
+              ]
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h3>Current Medications</h3><table border=\"1\"><thead><tr><th>Medication</th><th>Status</th><th>Codes</th></tr></thead><tbody><tr><td>Metformin 1000mg twice daily</td><td>active</td><td>RxNorm: 6809</td></tr><tr><td>Lisinopril 10mg once daily</td><td>active</td><td>RxNorm: 29046</td></tr><tr><td>Atorvastatin 40mg once daily</td><td>active</td><td>RxNorm: 83367</td></tr></tbody></table></div>"
+            }
+          },
+          {
+            "title": "Allergies and Intolerances",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48765-2",
+                  "display": "Allergies and adverse reactions Document"
+                }
+              ]
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h3>Known Allergies and Intolerances</h3><table border=\"1\"><thead><tr><th>Allergen</th><th>Onset Date</th><th>Codes</th></tr></thead><tbody><tr><td>Penicillin - Rash</td><td>1995-04-12</td><td>RxNorm: 70618</td></tr></tbody></table></div>"
+            }
+          },
+          {
+            "title": "Care Gaps and Recommendations",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "18776-5",
+                  "display": "Plan of care note"
+                }
+              ]
+            },
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h3>Identified Care Gaps and Recommendations</h3><ul><li>Diabetic foot exam overdue (last exam > 12 months ago)</li><li>Pneumococcal vaccine recommended for diabetic patients</li><li>Nephropathy screening due</li></ul><p><em>These recommendations are generated by AI analysis and should be reviewed by healthcare providers.</em></p></div>"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "url": "DocumentReference/symphony-docref-demo-001"
+      },
+      "resource": {
+        "resourceType": "DocumentReference",
+        "id": "symphony-docref-demo-001",
+        "status": "current",
+        "type": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11503-0",
+              "display": "Medical records"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                "code": "AI",
+                "display": "AI Generated"
+              }
+            ]
+          }
+        ],
+        "subject": {
+          "reference": "Patient/symphony-demo-patient-001"
+        },
+        "date": "2024-01-15T10:30:00Z",
+        "author": [
+          {
+            "display": "Symphony AI Clinical Summary Generator"
+          }
+        ],
+        "description": "AI generated clinical summary - Demo",
+        "content": [
+          {
+            "attachment": {
+              "contentType": "application/json",
+              "title": "Symphony Clinical Summary JSON",
+              "creation": "2024-01-15T10:30:00Z"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

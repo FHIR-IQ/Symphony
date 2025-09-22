@@ -1,0 +1,126 @@
+# HAPI FHIR Server Configuration for Symphony
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:testdb}
+    username: ${DATABASE_USERNAME:}
+    password: ${DATABASE_PASSWORD:}
+    driverClassName: ${DATABASE_DRIVER:org.h2.Driver}
+  jpa:
+    properties:
+      hibernate.dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.H2Dialect}
+      hibernate.search.backend.directory.root: ${hibernate.search.backend.directory.root:target/lucenefiles}
+      hibernate.search.backend.lucene_version: ${hibernate.search.backend.lucene_version:LUCENE_CURRENT}
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
+  endpoint:
+    health:
+      show-details: always
+
+# HAPI FHIR Configuration
+hapi:
+  fhir:
+    ### Server Framework
+    server_address: ${HAPI_FHIR_SERVER_ADDRESS:}
+    base_path: /fhir
+
+    ### FHIR Version
+    fhir_version: R4
+
+    ### Enable Web UI
+    web_ui_enabled: true
+
+    ### Database Configuration
+    datasource:
+      url: ${DATABASE_URL:jdbc:h2:mem:testdb}
+      username: ${DATABASE_USERNAME:}
+      password: ${DATABASE_PASSWORD:}
+      driver: ${DATABASE_DRIVER:org.h2.Driver}
+      dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.H2Dialect}
+
+    ### JPA Configuration
+    jpa:
+      # Enable automatic creation/update of database schema
+      auto_create_schema: true
+      # Enable database migrations
+      migrate_schema: true
+      # Enable validation on startup
+      validate_on_startup: true
+      # Enable scheduling (required for some features)
+      scheduling_enabled: true
+
+    ### Search Configuration
+    search:
+      # Enable advanced search features
+      advanced_lucene_indexing: true
+
+    ### CORS Configuration
+    cors:
+      enabled: true
+      allowed_origins:
+        - "https://*.vercel.app"
+        - "https://*.railway.app"
+        - "http://localhost:3000"
+        - "*"
+
+    ### Subscriptions
+    subscription:
+      enabled: false
+
+    ### Security
+    security:
+      # Disable security for demo purposes
+      enabled: false
+
+    ### Bulk Export
+    bulk_export:
+      enabled: false
+
+    ### Client ID Strategy
+    client_id_strategy: ANY
+
+    ### Narrative Generation
+    narrative:
+      enabled: true
+
+    ### Validation
+    validation:
+      # Enable validation
+      enabled: true
+      # Allow validation to be disabled per request
+      request_only: true
+
+    ### Binary Storage
+    binary_storage:
+      enabled: true
+
+    ### Custom Configuration for Symphony
+    symphony:
+      branding:
+        name: "Symphony FHIR Server"
+        description: "HAPI FHIR Server for Symphony AI Clinical Summaries"
+        organization: "Symphony AI"
+        contact: "https://github.com/FHIR-IQ/Symphony"
+
+# Logging Configuration
+logging:
+  level:
+    ca.uhn.fhir: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+    org.apache: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"

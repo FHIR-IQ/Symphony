@@ -1,18 +1,10 @@
 /**
- * API utility functions with demo mode support
+ * API utility functions for Symphony
  */
 
-import { DEMO_MODE, createMockFetch } from './demo-data';
-
-// Global fetch override for demo mode
-if (typeof window !== 'undefined' && DEMO_MODE) {
-  console.log('🎭 Demo mode enabled - using mock API responses');
-  window.fetch = createMockFetch() as any;
-}
-
 export const apiRequest = async (endpoint: string, options?: RequestInit) => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-  const url = DEMO_MODE ? endpoint : `${baseUrl}${endpoint}`;
+  // Use relative URLs that will work with Next.js API routes
+  const url = endpoint.startsWith('/api') ? endpoint : `/api${endpoint}`;
 
   try {
     const response = await fetch(url, {

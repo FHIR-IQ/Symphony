@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { generateSummary } from '../lib/api'
-import { DEMO_MODE } from '../lib/demo-data'
 
 interface GenerateProps {
   data: any
@@ -128,11 +127,7 @@ export default function Generate({ data, updateData }: GenerateProps) {
         summaryValidation: validation
       })
     } catch (error: any) {
-      if (DEMO_MODE) {
-        setGenerateError('Demo mode: ' + (error.message || 'Network simulation error'))
-      } else {
-        setGenerateError('Network error: Unable to reach backend. Please ensure services are running.')
-      }
+      setGenerateError(error.message || 'Failed to generate summary. Please try again.')
     } finally {
       setIsGenerating(false)
     }

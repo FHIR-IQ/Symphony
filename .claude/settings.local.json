@@ -11,7 +11,9 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(npm install)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(npx vercel:*)",
+      "WebFetch(domain:frontend-1qw1rmb74-aks129s-projects.vercel.app)"
     ],
     "deny": [],
     "ask": []

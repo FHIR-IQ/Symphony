@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { materializeSummary } from '../lib/api'
-import { DEMO_MODE } from '../lib/demo-data'
 
 interface PersistExportProps {
   data: any
@@ -40,11 +39,7 @@ export default function PersistExport({ data, updateData }: PersistExportProps) 
       setMaterializeResult(result)
       updateData({ materializeResult: result })
     } catch (error: any) {
-      if (DEMO_MODE) {
-        setMaterializeError('Demo mode: ' + (error.message || 'Network simulation error'))
-      } else {
-        setMaterializeError('Network error: Unable to reach backend. Please ensure services are running.')
-      }
+      setMaterializeError(error.message || 'Failed to materialize summary. Please try again.')
     } finally {
       setIsMaterializing(false)
     }

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { ingestData } from '../lib/api'
-import { DEMO_MODE } from '../lib/demo-data'
 
 interface SelectDataProps {
   data: any
@@ -74,11 +73,7 @@ export default function SelectData({ data, updateData }: SelectDataProps) {
         ingestResult: result
       })
     } catch (error: any) {
-      if (DEMO_MODE) {
-        setIngestError('Demo mode: ' + (error.message || 'Network simulation error'))
-      } else {
-        setIngestError('Network error: Unable to reach backend. Please ensure services are running.')
-      }
+      setIngestError(error.message || 'Failed to ingest data. Please try again.')
     } finally {
       setIsIngesting(false)
     }
@@ -104,11 +99,6 @@ export default function SelectData({ data, updateData }: SelectDataProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold mb-4">Step 1: Select Data Source</h2>
-        {DEMO_MODE && (
-          <div className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full">
-            🎭 Demo Mode
-          </div>
-        )}
       </div>
 
       {/* Data Source Selection */}

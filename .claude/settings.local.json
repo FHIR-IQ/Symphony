@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(python -m pytest tests/ -v --tb=short)",
+      "Bash(python -m pytest tests/test_contracts.py -v --tb=short)",
+      "Bash(python -m pytest tests/test_contracts.py::TestSummaryContractValidation::test_valid_summary_contract -v)",
+      "Bash(python:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

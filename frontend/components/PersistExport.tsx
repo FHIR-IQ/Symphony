@@ -81,7 +81,7 @@ export default function PersistExport({ data, updateData }: PersistExportProps) 
             ...data.generatedSummary.careGaps.map((gap: string) => ['Care Gap', gap, 'N/A', '']),
             ...data.generatedSummary.dataQualityNotes.map((note: string) => ['Data Quality', note, 'N/A', ''])
           ]
-          content = csvRows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n')
+          content = csvRows.map(row => row.map((cell: string) => `"${cell}"`).join(',')).join('\n')
           filename = `symphony-summary-${Date.now()}.csv`
           mimeType = 'text/csv'
           break

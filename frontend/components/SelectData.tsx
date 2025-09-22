@@ -70,7 +70,8 @@ export default function SelectData({ data, updateData }: SelectDataProps) {
       setIngestResult(result)
       updateData({
         patientReference: result.patientReference,
-        ingestResult: result
+        ingestResult: result,
+        patientData: result.patientData // Store patient data for summary generation
       })
     } catch (error: any) {
       setIngestError(error.message || 'Failed to ingest data. Please try again.')

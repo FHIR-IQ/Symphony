@@ -17,7 +17,8 @@
     }
   ],
   "env": {
-    "NEXT_PUBLIC_DEMO_MODE": "true",
-    "NEXT_PUBLIC_API_BASE_URL": ""
+    "NEXT_PUBLIC_HAPI_BASE_URL": "https://hapi.fhir.org/baseR4",
+    "HAPI_BASE_URL": "https://hapi.fhir.org/baseR4",
+    "NEXT_PUBLIC_USE_REAL_API": "true"
   }
 }

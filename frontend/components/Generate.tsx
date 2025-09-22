@@ -113,7 +113,8 @@ export default function Generate({ data, updateData }: GenerateProps) {
         detailLevel: data.detailLevel || 'standard',
         codingVerbosity: data.codingVerbosity || 'minimal',
         model: data.provider,
-        temperature: data.temperature || 0.0
+        temperature: data.temperature || 0.0,
+        patientData: data.patientData // Include patient data for Claude processing
       }
 
       const result = await generateSummary(payload)

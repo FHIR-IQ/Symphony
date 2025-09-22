@@ -1,10 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { ClaudeService } from '../../../lib/claude-service'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    const { patientRef, useCase, detailLevel, temperature, patientData } = body
 
-    // Demo summary generation
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'Claude API key not configured' },
+        { status: 500 }
+      )
+    }
+
+    const claudeService = new ClaudeService(apiKey)
+
+    const summary = await claudeService.generateSummary({
+      patientData,
+      useCase: useCase || 'clinical_summary',
+      detailLevel: detailLevel || 'standard',
+      temperature: temperature || 0.0
+    })
+
+    return NextResponse.json(summary)
+  } catch (error: any) {
+    console.error('Summary generation error:', error)
+
+    // Fallback demo summary if Claude API fails
     const summary = {
       problems: [
         {

@@ -57,7 +57,18 @@ export default function PersistExport({ data, updateData }: PersistExportProps) 
 
       switch (format) {
         case 'JSON':
-          content = JSON.stringify(data.generatedSummary, null, 2)
+          // Ensure we export valid JSON with metadata
+          const exportData = {
+            metadata: {
+              generated: new Date().toISOString(),
+              patientReference: data.patientReference,
+              source: 'Symphony AI Clinical Summary Generator',
+              version: '1.0.0'
+            },
+            summary: data.generatedSummary,
+            validation: data.summaryValidation
+          }
+          content = JSON.stringify(exportData, null, 2)
           filename = `symphony-summary-${Date.now()}.json`
           mimeType = 'application/json'
           break
@@ -105,7 +116,9 @@ export default function PersistExport({ data, updateData }: PersistExportProps) 
   }
 
   const getResourceViewerUrl = (resourceType: string, id: string) => {
-    return `/api/viewer/${resourceType}/${id}`
+    // Remove duplicate resourceType from ID if present
+    const cleanId = id.replace(`${resourceType}/`, '')
+    return `/api/viewer/${resourceType}/${cleanId}`
   }
 
   return (

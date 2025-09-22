@@ -1,27 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { FHIRClient } from '../../../lib/fhir-client'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    const { sourceBaseUrl, patientId, resources } = body
 
-    // Demo response - in production, this would connect to real FHIR server
-    return NextResponse.json({
-      message: `Successfully ingested patient data from ${body.sourceBaseUrl}`,
-      patientReference: `Patient/${body.patientId}`,
-      bundleId: `bundle-${Date.now()}`,
-      resourceCounts: {
-        Patient: 1,
-        Condition: Math.floor(Math.random() * 5) + 3,
-        Observation: Math.floor(Math.random() * 20) + 10,
-        MedicationRequest: Math.floor(Math.random() * 10) + 5,
-        AllergyIntolerance: Math.floor(Math.random() * 3) + 1,
-        Procedure: Math.floor(Math.random() * 8) + 2,
-        Encounter: Math.floor(Math.random() * 15) + 5
-      }
+    // Create FHIR client for the source server
+    const fhirClient = new FHIRClient(sourceBaseUrl)
+
+    // Fetch patient everything bundle
+    const bundle = await fhirClient.getPatientEverything(patientId)
+
+    // Count resources by type
+    const resourceCounts: Record<string, number> = {}
+    bundle.entry?.forEach(entry => {
+      const resourceType = entry.resource.resourceType
+      resourceCounts[resourceType] = (resourceCounts[resourceType] || 0) + 1
     })
-  } catch (error) {
+
+    return NextResponse.json({
+      message: `Successfully ingested patient data from ${sourceBaseUrl}`,
+      patientReference: `Patient/${patientId}`,
+      bundleId: bundle.id || `bundle-${Date.now()}`,
+      resourceCounts,
+      patientData: bundle // Store the full patient data for summary generation
+    })
+  } catch (error: any) {
+    console.error('Ingest error:', error)
     return NextResponse.json(
-      { error: 'Failed to ingest data' },
+      {
+        error: 'Failed to ingest data',
+        details: error.message
+      },
       { status: 500 }
     )
   }

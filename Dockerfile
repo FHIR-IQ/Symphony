@@ -1,17 +1,17 @@
-# HAPI FHIR Server - Railway Deployment from Root
-FROM hapiproject/hapi:v7.0.0
+# HAPI FHIR Server - Railway Deployment
+FROM hapiproject/hapi:latest
 
-# Copy custom configuration from hapi-server subdirectory
-COPY hapi-server/application.yaml /data/hapi/application.yaml
-
-# Set environment variables
-ENV SPRING_CONFIG_LOCATION=file:/data/hapi/application.yaml
-ENV SERVER_PORT=8080
+# Set environment variables for basic configuration
 ENV hapi.fhir.fhir_version=R4
+ENV hapi.fhir.cors.enabled=true
+ENV hapi.fhir.cors.allowed_origin=*
+ENV hapi.fhir.allow_external_references=true
+ENV hapi.fhir.allow_contains_searches=true
+ENV hapi.fhir.allow_multiple_delete=true
+ENV hapi.fhir.server_address=http://localhost:8080/fhir
+ENV spring.datasource.url=jdbc:h2:mem:test_mem
+ENV spring.jpa.properties.hibernate.search.enabled=false
+ENV server.port=8080
 
 # Expose port
 EXPOSE 8080
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8080/fhir/metadata || exit 1

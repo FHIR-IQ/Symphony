@@ -45,10 +45,15 @@
 - Horizontal scaling MUST be supported
 
 ### 7. Security & Privacy
-- API keys MUST never be exposed in code or logs
+- **API keys MUST NEVER be committed to version control**
+- **Environment variables MUST be used for all sensitive configuration**
+- **API keys MUST be rotated regularly (production: 30 days)**
+- **Different API keys MUST be used for different environments**
 - Patient data MUST be handled with appropriate security measures
 - CORS policies MUST be properly configured
 - Authentication MUST be implemented for production use
+- Logging MUST NOT expose sensitive information
+- .gitignore MUST protect all environment and secret files
 
 ### 8. Testing & Quality
 - All critical paths MUST have test coverage

@@ -8,12 +8,50 @@ frontend/.next/
 frontend/out/
 backend/dist/
 
-# Environment variables
+# Environment variables and secrets
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
+.env.development
+*.env
+.env.*
+!.env.example
+
+# API Keys and Secrets (extra protection)
+**/secrets/
+**/keys/
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json
+config.json
+service-account.json
+
+# API Key files
+*_api_key.txt
+*_secret.txt
+*_token.txt
+
+# Anthropic API specific
+anthropic_api_key.txt
+claude_api_key.txt
+
+# OpenAI API specific
+openai_api_key.txt
+gpt_api_key.txt
+
+# Google API specific
+google_api_key.txt
+gemini_api_key.txt
+
+# Security files
+*.cert
+*.crt
+ssl/
 
 # Logs
 *.log

@@ -44,20 +44,34 @@ cp .env.example .env
 
 ### 2. Configure Environment
 
-Edit `.env` file with your API keys:
+**⚠️ SECURITY: Never commit API keys to version control!**
+
+```bash
+# Copy example file
+cp .env.example .env
+
+# Edit with your actual API keys
+nano .env
+```
+
+Add your API keys to `.env`:
 
 ```env
-# LLM Provider API Keys
-ANTHROPIC_API_KEY=your_anthropic_key_here
-OPENAI_API_KEY=your_openai_key_here
-GOOGLE_API_KEY=your_google_key_here
+# LLM Provider API Keys (obtain from respective providers)
+ANTHROPIC_API_KEY=sk-ant-api03-your_actual_key_here
+OPENAI_API_KEY=sk-your_actual_key_here
+GOOGLE_API_KEY=AI_your_actual_key_here
 
 # Model Provider (anthropic|openai|gemini|mock)
-MODEL_PROVIDER=mock
+MODEL_PROVIDER=anthropic
 
 # HAPI Configuration
 HAPI_BASE=http://hapi:8080/fhir
 ```
+
+**📖 See [SECURITY.md](SECURITY.md) for complete API key security guide**
+
+**🔒 Security Check**: Run `python scripts/security-check.py` to validate security
 
 ### 3. Start Services
 

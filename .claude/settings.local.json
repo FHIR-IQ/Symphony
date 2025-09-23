@@ -33,7 +33,8 @@
       "WebFetch(domain:github.com)",
       "Bash(uv:*)",
       "Bash(pip install:*)",
-      "Bash(C:Usersdefault.LAPTOP-BOBEDDVK.localbinspecify.exe init symphony-spec)"
+      "Bash(C:Usersdefault.LAPTOP-BOBEDDVK.localbinspecify.exe init symphony-spec)",
+      "WebFetch(domain:frontend-joszqqcka-aks129s-projects.vercel.app)"
     ],
     "deny": [],
     "ask": []

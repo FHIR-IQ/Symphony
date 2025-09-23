@@ -1,8 +1,8 @@
-# HAPI FHIR Server - Custom Deployment
+# HAPI FHIR Server - Railway Deployment from Root
 FROM hapiproject/hapi:v7.0.0
 
-# Copy custom configuration - path relative to build context
-COPY ./application.yaml /data/hapi/application.yaml
+# Copy custom configuration from hapi-server subdirectory
+COPY hapi-server/application.yaml /data/hapi/application.yaml
 
 # Set environment variables
 ENV SPRING_CONFIG_LOCATION=file:/data/hapi/application.yaml

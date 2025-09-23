@@ -63,6 +63,8 @@ export class FHIRClient {
   async createResource(resource: FHIRResource): Promise<FHIRResource> {
     const url = `${this.baseUrl}/${resource.resourceType}`
 
+    console.log(`Creating ${resource.resourceType} at ${url}`)
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -73,7 +75,9 @@ export class FHIRClient {
     })
 
     if (!response.ok) {
-      throw new Error(`Failed to create ${resource.resourceType}: ${response.statusText}`)
+      const errorText = await response.text()
+      console.error(`Failed to create ${resource.resourceType}:`, response.status, errorText)
+      throw new Error(`Failed to create ${resource.resourceType}: ${response.status} ${response.statusText} - ${errorText}`)
     }
 
     return response.json()
@@ -99,8 +103,9 @@ export class FHIRClient {
 
 // Server-side instance (for API routes)
 export function createServerFHIRClient(): FHIRClient {
-  const baseUrl = process.env.HAPI_BASE_URL || 'https://hapi.fhir.org/baseR4'
-  return new FHIRClient(baseUrl)
+  // Use Railway proxy for write operations, fallback to public server for reads
+  const writeUrl = process.env.NEXT_PUBLIC_RAILWAY_FHIR_URL || process.env.HAPI_BASE_URL || 'https://hapi.fhir.org/baseR4'
+  return new FHIRClient(writeUrl.includes('railway') ? `${writeUrl}/fhir` : writeUrl)
 }
 
 // Client-side instance (for frontend)

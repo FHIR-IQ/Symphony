@@ -65,12 +65,21 @@ const fhirProxy = createProxyMiddleware({
   },
   onProxyReq: (proxyReq, req, res) => {
     console.log(`Proxying ${req.method} ${req.url} -> https://hapi.fhir.org/baseR4${req.url.replace('/fhir', '')}`);
+
+    // For write operations, add proper headers
+    if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+      proxyReq.setHeader('Content-Type', 'application/fhir+json');
+      proxyReq.setHeader('Accept', 'application/fhir+json');
+      console.log(`Write operation: ${req.method} with Content-Type: application/fhir+json`);
+    }
   },
   onProxyRes: (proxyRes, req, res) => {
     // Add CORS headers to proxied responses
     proxyRes.headers['access-control-allow-origin'] = '*';
-    proxyRes.headers['access-control-allow-methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
-    proxyRes.headers['access-control-allow-headers'] = 'Content-Type, Authorization, Accept';
+    proxyRes.headers['access-control-allow-methods'] = 'GET, POST, PUT, DELETE, OPTIONS, PATCH';
+    proxyRes.headers['access-control-allow-headers'] = 'Content-Type, Authorization, Accept, X-Requested-With';
+
+    console.log(`Response: ${req.method} ${req.url} -> ${proxyRes.statusCode}`);
   },
   onError: (err, req, res) => {
     console.error('Proxy error:', err);

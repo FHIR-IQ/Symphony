@@ -24,6 +24,11 @@ export default function ChooseSummary({ data, updateData }: ChooseSummaryProps) 
       description: 'FHIR Composition with structured sections'
     },
     {
+      value: 'composition-narrative',
+      label: 'Composition + AI Narrative',
+      description: 'FHIR Composition with AI-generated narrative text'
+    },
+    {
       value: 'lists',
       label: 'Lists',
       description: 'Separate FHIR List resources for each category'

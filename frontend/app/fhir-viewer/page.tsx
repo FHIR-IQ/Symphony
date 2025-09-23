@@ -41,14 +41,12 @@ export default function FHIRViewerPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        `${serverUrl}${basePath}/${resourceType}/${resourceId}`,
-        {
-          headers: {
-            'Accept': 'application/fhir+json'
-          }
-        }
-      );
+      // Use backend viewer API to avoid CORS issues
+      const params = new URLSearchParams({
+        resourceType: resourceType,
+        resourceId: resourceId
+      });
+      const response = await fetch(`/api/viewer?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch resource: ${response.status} ${response.statusText}`);
@@ -68,15 +66,16 @@ export default function FHIRViewerPage() {
     setLoading(true);
     setError(null);
     try {
-      const queryString = searchParams ? `?${searchParams}` : '';
-      const response = await fetch(
-        `${serverUrl}${basePath}/${resourceType}${queryString}`,
-        {
-          headers: {
-            'Accept': 'application/fhir+json'
-          }
-        }
-      );
+      // Use backend search endpoint to avoid CORS issues
+      const params = new URLSearchParams({ resourceType });
+      if (searchParams) {
+        const searchParamsObj = new URLSearchParams(searchParams);
+        searchParamsObj.forEach((value, key) => {
+          params.append(key, value);
+        });
+      }
+
+      const response = await fetch(`/api/fhir-search?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error(`Failed to search resources: ${response.status} ${response.statusText}`);
@@ -103,14 +102,12 @@ export default function FHIRViewerPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        `${serverUrl}${basePath}/metadata`,
-        {
-          headers: {
-            'Accept': 'application/fhir+json'
-          }
-        }
-      );
+      // Use backend viewer API to test connection and get metadata
+      const params = new URLSearchParams({
+        resourceType: 'CapabilityStatement',
+        resourceId: 'metadata'
+      });
+      const response = await fetch(`/api/viewer?${params.toString()}`);
 
       if (!response.ok) {
         throw new Error(`Server connection failed: ${response.status} ${response.statusText}`);

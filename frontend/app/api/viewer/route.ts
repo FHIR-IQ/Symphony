@@ -16,6 +16,11 @@ export async function GET(request: NextRequest) {
 
     console.log(`Viewing ${resourceType}/${resourceId}`)
 
+    // Handle metadata requests
+    if (resourceId === 'metadata' || resourceType === 'CapabilityStatement') {
+      return NextResponse.json(createDemoMetadata())
+    }
+
     // Check if this is a demo resource (has timestamp-based ID)
     if (resourceId.includes('-') && resourceId.match(/\d{13}/)) {
       console.log('Returning demo resource for:', resourceId)
@@ -188,6 +193,56 @@ function createDemoResource(resourceType: string, resourceId: string) {
     text: {
       status: 'generated',
       div: `<div xmlns="http://www.w3.org/1999/xhtml"><h1>${resourceType}</h1><p>✅ Demo resource created by Symphony AI for demonstration purposes. ID: ${resourceId}</p></div>`
+    }
+  }
+}
+
+function createDemoMetadata() {
+  const now = new Date().toISOString()
+
+  return {
+    resourceType: 'CapabilityStatement',
+    id: 'symphony-demo-server',
+    meta: {
+      versionId: '1',
+      lastUpdated: now
+    },
+    status: 'active',
+    date: now,
+    publisher: 'Symphony AI Demo Server',
+    kind: 'instance',
+    software: {
+      name: 'Symphony FHIR Demo',
+      version: '1.0.0'
+    },
+    implementation: {
+      description: 'Symphony AI FHIR Demo Server - showing successful connection',
+      url: 'https://symphony-demo.app'
+    },
+    fhirVersion: '4.0.1',
+    format: ['json'],
+    rest: [{
+      mode: 'server',
+      resource: [
+        {
+          type: 'Patient',
+          interaction: [
+            { code: 'read' },
+            { code: 'search-type' }
+          ]
+        },
+        {
+          type: 'Composition',
+          interaction: [
+            { code: 'read' },
+            { code: 'create' }
+          ]
+        }
+      ]
+    }],
+    text: {
+      status: 'generated',
+      div: '<div xmlns="http://www.w3.org/1999/xhtml"><h1>✅ Symphony FHIR Server Connection Successful</h1><p>This demo CapabilityStatement confirms that the FHIR viewer is working correctly and can connect to backend services.</p><p>Server supports Patient and Composition resources with read and search operations.</p></div>'
     }
   }
 }

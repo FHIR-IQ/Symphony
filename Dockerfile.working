@@ -1,7 +1,7 @@
-# HAPI FHIR Server - Minimal Railway Deployment
+# Ultra-simple HAPI FHIR Server for Railway
 FROM hapiproject/hapi:latest
 
-# Minimal configuration for Railway
+# Essential environment variables only
 ENV server.port=8080
 ENV hapi.fhir.fhir_version=R4
 ENV hapi.fhir.cors.enabled=true

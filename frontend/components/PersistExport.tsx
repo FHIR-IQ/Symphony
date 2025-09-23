@@ -118,7 +118,7 @@ export default function PersistExport({ data, updateData }: PersistExportProps) 
   const getResourceViewerUrl = (resourceType: string, id: string) => {
     // Remove duplicate resourceType from ID if present
     const cleanId = id.replace(`${resourceType}/`, '')
-    return `/api/viewer/${resourceType}/${cleanId}`
+    return `/api/viewer?resourceType=${resourceType}&resourceId=${cleanId}`
   }
 
   return (

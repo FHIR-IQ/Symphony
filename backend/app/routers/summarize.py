@@ -25,6 +25,7 @@ class SummarizeRequest(BaseModel):
     method: str = Field("comprehensive", description="Summary method")
     detailLevel: str = Field("standard", description="Level of detail (minimal|standard|detailed)")
     codingVerbosity: str = Field("minimal", description="Coding verbosity (none|minimal|full)")
+    audience: str = Field("provider", description="Target audience (patient|provider)")
     model: Optional[str] = Field(None, description="Override model provider")
     temperature: float = Field(0.0, ge=0.0, le=1.0, description="LLM temperature")
 
@@ -44,6 +45,12 @@ class SummarizeRequest(BaseModel):
     def validate_coding_verbosity(cls, v):
         if v not in ["none", "minimal", "full"]:
             raise ValueError("codingVerbosity must be none, minimal, or full")
+        return v
+
+    @validator("audience")
+    def validate_audience(cls, v):
+        if v not in ["patient", "provider"]:
+            raise ValueError("audience must be patient or provider")
         return v
 
 

@@ -68,42 +68,78 @@ class EncounterItem(BaseModel):
 
 
 class SummaryContract(BaseModel):
-    """Strict contract for medical summary output."""
+    """Strict contract for medical summary output with narratives."""
     problems: List[Item] = Field(
         default_factory=list,
         description="List of medical problems/conditions"
+    )
+    problems_narrative: Optional[str] = Field(
+        None,
+        description="Human-readable narrative for problems section"
     )
     medications: List[MedicationItem] = Field(
         default_factory=list,
         description="List of medications"
     )
+    medications_narrative: Optional[str] = Field(
+        None,
+        description="Human-readable narrative for medications section"
+    )
     allergies: List[Item] = Field(
         default_factory=list,
         description="List of allergies and intolerances"
+    )
+    allergies_narrative: Optional[str] = Field(
+        None,
+        description="Human-readable narrative for allergies section"
     )
     vitals: List[ObservationItem] = Field(
         default_factory=list,
         description="List of vital signs"
     )
+    vitals_narrative: Optional[str] = Field(
+        None,
+        description="Human-readable narrative for vitals section"
+    )
     labs: List[ObservationItem] = Field(
         default_factory=list,
         description="List of laboratory results"
+    )
+    labs_narrative: Optional[str] = Field(
+        None,
+        description="Human-readable narrative for labs section"
     )
     procedures: List[Item] = Field(
         default_factory=list,
         description="List of procedures"
     )
+    procedures_narrative: Optional[str] = Field(
+        None,
+        description="Human-readable narrative for procedures section"
+    )
     encounters: List[EncounterItem] = Field(
         default_factory=list,
         description="List of encounters"
+    )
+    encounters_narrative: Optional[str] = Field(
+        None,
+        description="Human-readable narrative for encounters section"
     )
     careGaps: List[str] = Field(
         default_factory=list,
         description="Identified gaps in care"
     )
+    care_gaps_narrative: Optional[str] = Field(
+        None,
+        description="Human-readable narrative for care gaps"
+    )
     dataQualityNotes: List[str] = Field(
         default_factory=list,
         description="Notes about data quality or missing information"
+    )
+    overall_narrative: Optional[str] = Field(
+        None,
+        description="Overall summary narrative"
     )
 
     class Config:

@@ -121,27 +121,6 @@ export default function SelectData({ data, updateData }: SelectDataProps) {
           <span className="font-medium">FHIR Server</span>
         </label>
 
-        <label className="flex items-center opacity-50">
-          <input
-            type="radio"
-            name="dataSource"
-            value="file"
-            disabled
-            className="mr-2"
-          />
-          <span>Upload File (Coming Soon)</span>
-        </label>
-
-        <label className="flex items-center opacity-50">
-          <input
-            type="radio"
-            name="dataSource"
-            value="manual"
-            disabled
-            className="mr-2"
-          />
-          <span>Manual Input (Coming Soon)</span>
-        </label>
       </div>
 
       {data.dataSource === 'fhir' && (

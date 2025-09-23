@@ -37,10 +37,15 @@ class LLMAdapter(ABC):
         use_case = params.get("useCase", "clinical_summary")
         detail_level = params.get("detailLevel", "standard")
         coding_verbosity = params.get("codingVerbosity", "minimal")
+        audience = params.get("audience", "provider")
+
+        audience_instruction = "Use medical terminology and clinical language." if audience == "provider" else "Use patient-friendly language and explain medical terms."
 
         prompt = f"""You are a medical data analyst. Generate a structured medical summary from the provided FHIR resources.
 
-IMPORTANT: You must respond with ONLY valid JSON that conforms to this exact schema:
+Target audience: {audience} ({audience_instruction})
+
+IMPORTANT: You must respond with ONLY valid JSON that conforms to this exact schema with BOTH structured data AND narrative text:
 
 {{
   "problems": [
@@ -57,6 +62,7 @@ IMPORTANT: You must respond with ONLY valid JSON that conforms to this exact sch
       "provenance": "ResourceType/id - MUST match a resource ID from input"
     }}
   ],
+  "problems_narrative": "string - Human-readable narrative explaining all problems/conditions for {audience}",
   "medications": [
     {{
       "display": "string - medication name, dose, frequency",
@@ -66,7 +72,9 @@ IMPORTANT: You must respond with ONLY valid JSON that conforms to this exact sch
       "provenance": "MedicationRequest/id"
     }}
   ],
+  "medications_narrative": "string - Human-readable narrative explaining all medications for {audience}",
   "allergies": [/* same structure as problems */],
+  "allergies_narrative": "string - Human-readable narrative explaining allergies for {audience}",
   "vitals": [
     {{
       "display": "string - vital sign name",
@@ -76,8 +84,11 @@ IMPORTANT: You must respond with ONLY valid JSON that conforms to this exact sch
       "provenance": "Observation/id"
     }}
   ],
+  "vitals_narrative": "string - Human-readable narrative explaining vital signs for {audience}",
   "labs": [/* same structure as vitals */],
+  "labs_narrative": "string - Human-readable narrative explaining lab results for {audience}",
   "procedures": [/* same structure as problems */],
+  "procedures_narrative": "string - Human-readable narrative explaining procedures for {audience}",
   "encounters": [
     {{
       "display": "string - encounter description",
@@ -90,8 +101,11 @@ IMPORTANT: You must respond with ONLY valid JSON that conforms to this exact sch
       "provenance": "Encounter/id"
     }}
   ],
+  "encounters_narrative": "string - Human-readable narrative explaining recent encounters for {audience}",
   "careGaps": ["string - identified care gaps"],
-  "dataQualityNotes": ["string - data quality observations"]
+  "care_gaps_narrative": "string - Human-readable narrative explaining care gaps for {audience}",
+  "dataQualityNotes": ["string - data quality observations"],
+  "overall_narrative": "string - Overall clinical summary narrative for {audience}"
 }}
 
 Rules:
@@ -102,6 +116,12 @@ Rules:
 5. Detail level: {detail_level}
 6. Coding verbosity: {coding_verbosity}
 7. Use case focus: {use_case}
+8. Target audience: {audience}
+9. ALL narrative fields are REQUIRED - provide substantial text (minimum 50 characters each)
+10. Narratives must be medically accurate and contextually relevant
+11. Use {audience_instruction}
+12. If a section has no data, provide narrative explaining the absence
+13. Each narrative should synthesize and explain the corresponding JSON data
 
 Input FHIR Bundle:
 {json.dumps(input_bundle, indent=2)}
@@ -217,7 +237,22 @@ class MockLLMAdapter(LLMAdapter):
         max_tokens: int = 4096,
         json_mode: bool = True
     ) -> str:
-        """Return mock JSON response."""
+        """Return mock JSON response with narratives."""
+        # Extract audience from prompt if available
+        audience = "provider"  # Default
+        if "Target audience: patient" in prompt:
+            audience = "patient"
+
+        # Audience-specific language
+        if audience == "patient":
+            problems_narrative = "You have diabetes (high blood sugar) that was diagnosed in 2020. This is a condition that needs ongoing management with medication and lifestyle changes."
+            medications_narrative = "Currently, no medications are listed in your records. Your doctor may prescribe medications to help manage your diabetes."
+            overall_narrative = "This is a summary of your medical information. You have diabetes that requires ongoing care and monitoring."
+        else:
+            problems_narrative = "Patient presents with Type 2 Diabetes Mellitus diagnosed in January 2020. Condition requires ongoing monitoring and management per ADA guidelines."
+            medications_narrative = "No current medications documented in the system. Consider antidiabetic therapy evaluation per clinical guidelines."
+            overall_narrative = "58-year-old patient with Type 2 DM requiring comprehensive diabetes management and care coordination."
+
         return json.dumps({
             "problems": [
                 {
@@ -230,12 +265,21 @@ class MockLLMAdapter(LLMAdapter):
                     "provenance": "Condition/123"
                 }
             ],
+            "problems_narrative": problems_narrative,
             "medications": [],
+            "medications_narrative": medications_narrative,
             "allergies": [],
+            "allergies_narrative": "No known allergies or intolerances documented in the current record.",
             "vitals": [],
+            "vitals_narrative": "No recent vital signs available in the current data set.",
             "labs": [],
+            "labs_narrative": "No recent laboratory results available for review.",
             "procedures": [],
+            "procedures_narrative": "No procedures documented in the current time period.",
             "encounters": [],
-            "careGaps": [],
-            "dataQualityNotes": []
+            "encounters_narrative": "No recent healthcare encounters documented.",
+            "careGaps": ["Annual diabetic eye exam overdue", "HbA1c monitoring needed"],
+            "care_gaps_narrative": "Patient requires annual diabetic eye examination and regular HbA1c monitoring per diabetes management protocols.",
+            "dataQualityNotes": ["Limited recent clinical data available"],
+            "overall_narrative": overall_narrative
         })

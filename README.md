@@ -1,6 +1,8 @@
 # Symphony - AI-Powered Medical Summary Generation
 
-Symphony is a full-stack application that generates AI-powered clinical summaries from FHIR data using large language models, with proper validation and materialization back to FHIR resources.
+Symphony is a **spec-driven** full-stack application that generates AI-powered clinical summaries from FHIR data using large language models, with proper validation and materialization back to FHIR resources.
+
+> **📋 Spec-Driven Development**: This project follows strict specification-driven development principles. All features are specified before implementation. See [SPEC_DRIVEN_DEVELOPMENT.md](SPEC_DRIVEN_DEVELOPMENT.md) for details.
 
 ## Architecture Overview
 
@@ -353,14 +355,31 @@ docker-compose exec api ping hapi
 - **HAPI Test**: `https://hapi.fhir.org/baseR4`
 - **SMART Sandbox**: `https://launch.smarthealthit.org/v/r4/fhir`
 
+## Specifications
+
+Symphony follows **Spec-Driven Development**. All specifications are in the `/specifications` directory:
+
+- **[Project Constitution](specifications/CONSTITUTION.md)**: Core principles and values
+- **[System Specification](specifications/SPECIFICATION.md)**: Complete system overview
+- **[Feature Specs](specifications/features/)**: Detailed feature requirements
+- **[Architecture](specifications/architecture/SYSTEM_DESIGN.md)**: Technical design
+- **[Test Plan](specifications/testing/TEST_PLAN.md)**: Comprehensive testing strategy
+
 ## Contributing
 
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Run tests: `python -m pytest tests/ -q`
-4. Commit changes: `git commit -m 'Add amazing feature'`
-5. Push to branch: `git push origin feature/amazing-feature`
-6. Open Pull Request
+Symphony follows spec-driven development. To contribute:
+
+1. **Read the specifications** in `/specifications`
+2. **Check the constitution** for project principles
+3. Fork the repository
+4. **Write/update specifications** before coding
+5. Create feature branch: `git checkout -b feature/amazing-feature`
+6. **Implement against specifications**
+7. Run tests: `python -m pytest tests/ -q`
+8. **Validate specification compliance**
+9. Commit changes: `git commit -m 'Add amazing feature per spec'`
+10. Push to branch: `git push origin feature/amazing-feature`
+11. Open Pull Request with spec references
 
 ## License
 

@@ -26,7 +26,14 @@
       "Bash(node:*)",
       "Bash(HAPI_SERVER_URL=\"https://hapi.fhir.org/baseR4\" MAX_BUNDLES=5 node load-synthea-data.js)",
       "Bash(MAX_BUNDLES=3 MAX_RESOURCES_PER_TYPE=5 node extract-and-load-resources.js)",
-      "Bash(MAX_BUNDLES=10 MAX_RESOURCES_PER_TYPE=10 node extract-and-load-resources.js)"
+      "Bash(MAX_BUNDLES=10 MAX_RESOURCES_PER_TYPE=10 node extract-and-load-resources.js)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(uv:*)",
+      "Bash(pip install:*)",
+      "Bash(C:Usersdefault.LAPTOP-BOBEDDVK.localbinspecify.exe init symphony-spec)"
     ],
     "deny": [],
     "ask": []

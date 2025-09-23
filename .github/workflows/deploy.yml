@@ -1,0 +1,97 @@
+name: Deploy Symphony
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  security-check:
+    name: Security Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run security check
+        run: |
+          python scripts/security-check.py
+          echo "✅ Security validation passed"
+
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    needs: security-check
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          cd backend
+          python -m pytest tests/ -v
+
+      - name: Test API key configuration (without exposing)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cd backend
+          python -c "
+          import os
+          key = os.getenv('ANTHROPIC_API_KEY')
+          if key and len(key) > 20:
+              print('✅ ANTHROPIC_API_KEY is configured correctly')
+          else:
+              print('❌ ANTHROPIC_API_KEY not found or invalid')
+              exit(1)
+          "
+
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    needs: [security-check, test-backend]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: '--prod'
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./frontend
+
+  notify-deployment:
+    name: Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: [deploy-frontend]
+    if: always()
+    steps:
+      - name: Deployment Success
+        if: needs.deploy-frontend.result == 'success'
+        run: |
+          echo "🚀 Deployment successful!"
+          echo "Frontend: https://frontend-joszqqcka-aks129s-projects.vercel.app"
+
+      - name: Deployment Failed
+        if: needs.deploy-frontend.result == 'failure'
+        run: |
+          echo "❌ Deployment failed!"
+          exit 1

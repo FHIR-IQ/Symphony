@@ -29,7 +29,7 @@ export default function SelectData({ data, updateData }: SelectDataProps) {
   const publicServers = [
     {
       name: 'Symphony HAPI Server',
-      url: process.env.NEXT_PUBLIC_HAPI_SERVER_URL ? `${process.env.NEXT_PUBLIC_HAPI_SERVER_URL}${process.env.NEXT_PUBLIC_HAPI_BASE_PATH || '/baseR4'}` : 'https://hapi.fhir.org/baseR4',
+      url: process.env.NEXT_PUBLIC_HAPI_SERVER_URL ? `${process.env.NEXT_PUBLIC_HAPI_SERVER_URL}${process.env.NEXT_PUBLIC_HAPI_BASE_PATH || '/fhir'}` : 'https://symphony-hapi.railway.app/fhir',
       description: 'Hosted Symphony HAPI FHIR server'
     },
     {

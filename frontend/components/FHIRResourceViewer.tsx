@@ -13,7 +13,7 @@ export default function FHIRResourceViewer({
   resourceType,
   resourceId,
   resource: initialResource,
-  serverUrl = process.env.NEXT_PUBLIC_HAPI_SERVER_URL || 'https://hapi.fhir.org'
+  serverUrl = process.env.NEXT_PUBLIC_HAPI_SERVER_URL || 'https://symphony-hapi.railway.app'
 }: FHIRResourceViewerProps) {
   const [resource, setResource] = useState<any>(initialResource);
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ export default function FHIRResourceViewer({
   const [searchQuery, setSearchQuery] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const basePath = process.env.NEXT_PUBLIC_HAPI_BASE_PATH || '/baseR4';
+  const basePath = process.env.NEXT_PUBLIC_HAPI_BASE_PATH || '/fhir';
 
   useEffect(() => {
     if (resourceType && resourceId && !initialResource) {

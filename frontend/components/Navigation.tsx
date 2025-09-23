@@ -38,7 +38,7 @@ export default function Navigation() {
           </div>
           <div className="flex items-center space-x-4">
             <a
-              href={`${process.env.NEXT_PUBLIC_HAPI_SERVER_URL || 'https://hapi.fhir.org'}${process.env.NEXT_PUBLIC_HAPI_BASE_PATH || '/baseR4'}`}
+              href={`${process.env.NEXT_PUBLIC_HAPI_SERVER_URL || 'https://symphony-hapi.railway.app'}${process.env.NEXT_PUBLIC_HAPI_BASE_PATH || '/fhir'}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-gray-600 hover:text-blue-600 flex items-center"

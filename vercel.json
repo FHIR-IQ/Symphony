@@ -5,12 +5,12 @@
   "framework": "nextjs",
   "root": "frontend",
   "env": {
-    "NEXT_PUBLIC_HAPI_SERVER_URL": "https://hapi.fhir.org",
-    "NEXT_PUBLIC_HAPI_BASE_PATH": "/baseR4",
-    "NEXT_PUBLIC_HAPI_BASE_URL": "https://hapi.fhir.org/baseR4",
-    "HAPI_BASE_URL": "https://hapi.fhir.org/baseR4",
+    "NEXT_PUBLIC_HAPI_SERVER_URL": "https://symphony-hapi.railway.app",
+    "NEXT_PUBLIC_HAPI_BASE_PATH": "/fhir",
+    "NEXT_PUBLIC_HAPI_BASE_URL": "https://symphony-hapi.railway.app/fhir",
+    "HAPI_BASE_URL": "https://symphony-hapi.railway.app/fhir",
     "NEXT_PUBLIC_USE_REAL_API": "true",
-    "NEXT_PUBLIC_HAPI_WEB_URL": "https://hapi.fhir.org",
+    "NEXT_PUBLIC_HAPI_WEB_URL": "https://symphony-hapi.railway.app",
     "NEXT_PUBLIC_ENABLE_FHIR_VIEWER": "true",
     "NEXT_PUBLIC_ENABLE_FHIR_VALIDATION": "true"
   }

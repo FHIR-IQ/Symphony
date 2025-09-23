@@ -12,8 +12,8 @@ export default function FHIRViewerPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedResource, setSelectedResource] = useState<any>(null);
 
-  const serverUrl = process.env.NEXT_PUBLIC_HAPI_SERVER_URL || 'https://hapi.fhir.org';
-  const basePath = process.env.NEXT_PUBLIC_HAPI_BASE_PATH || '/baseR4';
+  const serverUrl = process.env.NEXT_PUBLIC_HAPI_SERVER_URL || 'https://symphony-hapi.railway.app';
+  const basePath = process.env.NEXT_PUBLIC_HAPI_BASE_PATH || '/fhir';
 
   const commonResourceTypes = [
     'Patient',

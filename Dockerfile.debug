@@ -1,0 +1,27 @@
+# Debug HAPI server startup issues
+FROM hapiproject/hapi:latest
+
+# Add debugging tools
+USER root
+RUN apt-get update && apt-get install -y curl netstat-nat procps && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables with verbose logging
+ENV server.port=8080
+ENV hapi.fhir.fhir_version=R4
+ENV hapi.fhir.cors.enabled=true
+ENV logging.level.root=INFO
+ENV logging.level.ca.uhn.fhir=DEBUG
+
+# Create startup script for debugging
+RUN echo '#!/bin/bash\n\
+echo "=== HAPI Server Debug Info ==="\n\
+echo "Port: $server.port"\n\
+echo "FHIR Version: $hapi.fhir.fhir_version"\n\
+echo "CORS: $hapi.fhir.cors.enabled"\n\
+echo "Starting HAPI server..."\n\
+exec java $JAVA_OPTS -jar /app/main.jar\n\
+' > /start-debug.sh && chmod +x /start-debug.sh
+
+EXPOSE 8080
+
+CMD ["/start-debug.sh"]

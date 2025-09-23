@@ -1,0 +1,25 @@
+# Simple Java-based HAPI server
+FROM openjdk:17-jdk-slim
+
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Download HAPI FHIR JPA Server starter
+ADD https://github.com/hapifhir/hapi-fhir-jpaserver-starter/releases/download/v7.0.2/hapi-fhir-jpaserver.war /app/app.jar
+
+# Set environment for embedded Tomcat
+ENV SERVER_PORT=8080
+ENV SPRING_PROFILES_ACTIVE=default
+ENV hapi.fhir.fhir_version=R4
+ENV hapi.fhir.cors.enabled=true
+
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+  CMD curl -f http://localhost:8080/fhir/metadata || exit 1
+
+CMD ["java", "-jar", "/app/app.jar", "--server.port=8080"]

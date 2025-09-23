@@ -1,0 +1,30 @@
+# Use the official HAPI FHIR server image
+FROM hapiproject/hapi:latest
+
+# Set environment variables for HAPI FHIR
+ENV SPRING_DATASOURCE_URL=jdbc:h2:mem:testdb
+ENV SPRING_DATASOURCE_USERNAME=sa
+ENV SPRING_DATASOURCE_PASSWORD=null
+ENV SPRING_DATASOURCE_DRIVERCLASSNAME=org.h2.Driver
+ENV SPRING_JPA_HIBERNATE_DDLAUTO=create-drop
+
+# Enable CORS for all origins
+ENV HAPI_FHIR_CORS_ENABLED=true
+ENV HAPI_FHIR_CORS_ALLOWED_ORIGIN=*
+
+# Allow all resource types
+ENV HAPI_FHIR_SUPPORTED_RESOURCE_TYPES=*
+
+# Enable subscription
+ENV HAPI_FHIR_SUBSCRIPTION_ENABLED=true
+
+# Allow bulk operations
+ENV HAPI_FHIR_BULK_ENABLED=true
+
+# Set server base URL
+ENV HAPI_FHIR_SERVER_BASE=/fhir
+
+# Expose port 8080
+EXPOSE 8080
+
+# Default command is already set in the base image

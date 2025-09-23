@@ -9,8 +9,8 @@
 2. **Create New Project**
    - Click "New Project"
    - Choose "Deploy from GitHub repo"
-   - Select the Symphony repository
-   - Choose the `hapi-server` directory
+   - Select your forked Symphony repository
+   - Railway will auto-detect the configuration
 
 3. **Configure Environment Variables (Optional)**
 

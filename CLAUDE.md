@@ -1,67 +1,70 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 ## Project Overview
 
-**Impact Engine** is an interactive, real-time workshop application for the "AI Office Hours" at Outcomes.com. It facilitates "The Billion Dollar Pivot" — a competitive simulation where product management squads design AI-powered pharmacy strategies and compete for "CEO funding."
-
-## Tech Stack
-
-- **Framework**: Next.js 15 (App Router, TypeScript)
-- **Backend/Auth**: Supabase (Postgres + Realtime)
-- **Styling**: Tailwind CSS v4
-- **AI**: Vercel AI SDK + Anthropic Claude
-- **Deployment**: Vercel
+**Impact Engine** is a real-time multiplayer workshop app for Outcomes.com "AI Office Hours." Product management squads compete in "The Billion Dollar Pivot" — designing AI-powered pharmacy strategies and pitching for "CEO funding." Built for live, in-room use with 10-30 participants.
 
 ## Build & Run Commands
 
 ```bash
-npm run dev      # Start development server
+npm run dev      # Start development server (Next.js on localhost:3000)
 npm run build    # Production build
-npm run start    # Start production server
 npm run lint     # Run ESLint
+npm run test     # Run Vitest unit tests
+npm run test:e2e # Run Playwright E2E tests (starts dev server automatically)
 ```
 
-## Project Structure
+## Tech Stack
 
-```
-src/
-  app/
-    page.tsx                    # Home — create/join game
-    lobby/page.tsx              # Lobby — waiting room with live presence
-    game/[sessionId]/page.tsx   # Main game — phases: teams, strategy, voting, finished
-    api/
-      ai-critique/route.ts     # AI strategy evaluation endpoint
-      ceo-verdict/route.ts     # CEO agent final verdict endpoint
-      vote/route.ts             # Vote casting endpoint
-  components/
-    TeamSetup.tsx               # Team creation and joining
-    StrategyBuilder.tsx         # Multi-step strategy form + AI critique
-    VotingDashboard.tsx         # Real-time voting with animated bars
-    CEOVerdict.tsx              # Final reveal with confetti
-  lib/
-    supabase.ts                 # Supabase client
-    database.types.ts           # TypeScript types for Supabase schema
-    game-utils.ts               # Room codes, player IDs, MAS patterns
-```
+- **Next.js 15** (App Router, React 19, TypeScript)
+- **Supabase** (Postgres + Realtime subscriptions for live multiplayer)
+- **Tailwind CSS v4** (via @tailwindcss/postcss)
+- **Vercel AI SDK** (`ai` + `@ai-sdk/anthropic`) for Claude API calls
+- **Deployment**: Vercel
 
-## Database
+## Architecture
 
-Schema is in `supabase/schema.sql`. Run it in Supabase SQL Editor to initialize.
+### Game State Machine
+
+The app is a linear state machine driven by `game_sessions.status`:
+
+`lobby` → `planning` → `voting` → `finished`
+
+Phase transitions are triggered by the host player via Supabase updates. The main game page (`src/app/game/[sessionId]/page.tsx`) renders different components based on the current phase. Note: the component code uses a local `GamePhase` type with value `"teams"` for the initial in-game phase, which maps to the `"planning"` status in the database.
+
+### Real-time Sync
+
+All multiplayer state flows through **Supabase Realtime** postgres_changes subscriptions. The game page subscribes to changes on `game_sessions`, `teams`, and `players` tables filtered by `session_id`. There is no custom WebSocket server — Supabase handles all real-time communication.
+
+### Player Identity
+
+Players are identified by a UUID stored in `localStorage` (key: `impact-engine-player-id`). There is no authentication — identity is browser-local. The host is tracked via `game_sessions.host_id`.
+
+### AI Integration
+
+Two API routes call Claude via the Vercel AI SDK (`generateText`):
+
+- **`/api/ai-critique`** — Evaluates team strategies using the IMPACT framework (Interesting, Meaningful, People-focused, Actionable, Clear, Testable). Returns a 1-10 score and structured feedback as JSON.
+- **`/api/ceo-verdict`** — AI "CEO" picks a winner from all teams considering AI scores and peer votes. Returns a theatrical speech as JSON.
+
+Both endpoints expect and parse raw JSON from Claude's text output (no streaming). On error, both return graceful fallback responses with HTTP 200.
+
+The **`/api/vote`** route uses a separate Supabase client with `SUPABASE_SERVICE_ROLE_KEY` for server-side write access, with upsert to enforce one vote per voter per session.
+
+### Database
+
+Schema lives in `supabase/schema.sql`. Four tables: `game_sessions`, `teams`, `players`, `votes`. One view: `leaderboard`. Types are manually defined in `src/lib/database.types.ts` (not auto-generated from Supabase).
+
+### Key Domain Concepts
+
+- **MAS Patterns**: Multi-Agent System architecture patterns (Sequential, Parallel, Coordinator) that teams select as part of their strategy — defined in `src/lib/game-utils.ts`
+- **IMPACT Framework**: The scoring rubric Claude uses to evaluate strategies (Interesting, Meaningful, People-focused, Actionable, Clear, Testable)
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` and fill in:
-- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anonymous key
-- `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key
-- `ANTHROPIC_API_KEY` — Anthropic API key for Claude
-
-## Game Flow
-
-1. **Home**: Host creates a room, players join with a 6-character code
-2. **Lobby**: Real-time player list, host starts game
-3. **Team Setup**: Players form squads of 3-4
-4. **Strategy Phase**: Teams fill out Problem Statement, Outcome Metric, JTBD, and MAS Pattern
-5. **AI Review**: Claude evaluates each strategy using the IMPACT framework (1-10 score)
-6. **Voting**: All players vote on best strategy, real-time animated leaderboard
-7. **CEO Verdict**: AI CEO announces the "fully funded" winner with confetti
+Copy `.env.example` to `.env.local`:
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase client access
+- `SUPABASE_SERVICE_ROLE_KEY` — Server-side Supabase access (used in vote API)
+- `ANTHROPIC_API_KEY` — Claude API key (used by Vercel AI SDK)

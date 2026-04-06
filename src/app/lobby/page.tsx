@@ -2,9 +2,31 @@
 
 import { Suspense, useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { generatePlayerId } from "@/lib/game-utils";
 import type { Player, GameSession } from "@/lib/database.types";
+
+const WARMUP_QUESTIONS = [
+  {
+    question: "A pharmacy needs to check drug-drug, drug-disease, and drug-allergy interactions simultaneously. Which MAS pattern fits best?",
+    options: ["Sequential Pipeline", "Parallel Fan-Out", "Coordinator"],
+    answer: 1,
+    explanation: "Parallel Fan-Out lets multiple sub-agents work independently on each interaction type, then a synthesizer aggregates results \u2014 much faster than checking sequentially.",
+  },
+  {
+    question: "What does the 'M' in the IMPACT framework stand for?",
+    options: ["Measurable", "Meaningful", "Minimal"],
+    answer: 1,
+    explanation: "Meaningful \u2014 does the strategy drive real business value like Star Ratings, adherence improvements, or revenue?",
+  },
+  {
+    question: "A patient support bot needs to route billing questions vs. clinical medication questions to different specialists. Which pattern?",
+    options: ["Sequential Pipeline", "Parallel Fan-Out", "Coordinator / Dispatcher"],
+    answer: 2,
+    explanation: "A Coordinator routes incoming requests to the right specialized sub-agent based on the type of question.",
+  },
+];
 
 export default function LobbyPage() {
   return (
@@ -31,7 +53,12 @@ function LobbyContent() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [isHost, setIsHost] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [quizIndex, setQuizIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [showExplanation, setShowExplanation] = useState(false);
   const playerId = typeof window !== "undefined" ? generatePlayerId() : "";
+
+  const quiz = WARMUP_QUESTIONS[quizIndex % WARMUP_QUESTIONS.length];
 
   const fetchData = useCallback(async () => {
     if (!sessionId) return;
@@ -54,7 +81,6 @@ function LobbyContent() {
     fetchData();
   }, [fetchData]);
 
-  // Subscribe to realtime changes
   useEffect(() => {
     if (!sessionId) return;
 
@@ -83,7 +109,6 @@ function LobbyContent() {
     };
   }, [sessionId, fetchData, router]);
 
-  // Redirect if game already started
   useEffect(() => {
     if (session && session.status !== "lobby") {
       router.push(`/game/${sessionId}`);
@@ -106,6 +131,17 @@ function LobbyContent() {
     }
   }
 
+  function handleQuizAnswer(index: number) {
+    setSelectedAnswer(index);
+    setShowExplanation(true);
+  }
+
+  function nextQuestion() {
+    setQuizIndex((prev) => prev + 1);
+    setSelectedAnswer(null);
+    setShowExplanation(false);
+  }
+
   if (!sessionId) {
     return (
       <main className="flex-1 flex items-center justify-center">
@@ -116,7 +152,7 @@ function LobbyContent() {
 
   return (
     <main className="flex-1 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full space-y-8">
+      <div className="max-w-2xl w-full space-y-6">
         {/* Header */}
         <div className="text-center space-y-2 animate-fade-in">
           <h1 className="text-3xl font-bold">Game Lobby</h1>
@@ -124,9 +160,10 @@ function LobbyContent() {
         </div>
 
         {/* Room Code */}
-        <div className="glass-card p-8 text-center space-y-4 animate-slide-up">
+        <div className="glass-card p-6 text-center space-y-3 animate-slide-up">
           <p className="text-sm text-muted uppercase tracking-wider">Room Code</p>
           <button
+            type="button"
             onClick={copyCode}
             className="inline-block font-mono text-5xl font-bold tracking-[0.3em] text-accent hover:text-accent/80 transition-colors cursor-pointer"
           >
@@ -138,7 +175,7 @@ function LobbyContent() {
         </div>
 
         {/* Players */}
-        <div className="glass-card p-6 space-y-4 animate-slide-up">
+        <div className="glass-card p-5 space-y-3 animate-slide-up">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">
               Players ({players.length})
@@ -149,7 +186,7 @@ function LobbyContent() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 stagger-children">
             {players.map((player) => (
               <div
                 key={player.id}
@@ -175,10 +212,57 @@ function LobbyContent() {
           )}
         </div>
 
+        {/* Warmup Quiz */}
+        <div className="glass-card p-5 space-y-3 animate-slide-up">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Image src="/images/lobby-lounge.png" alt="" width={32} height={32} className="rounded-lg" style={{ width: 32, height: 'auto' }} />
+              <h3 className="text-sm font-semibold text-secondary">Warmup Challenge</h3>
+            </div>
+            <span className="text-xs text-muted">Q{(quizIndex % WARMUP_QUESTIONS.length) + 1}/{WARMUP_QUESTIONS.length}</span>
+          </div>
+          <p className="text-sm font-medium">{quiz.question}</p>
+          <div className="space-y-2">
+            {quiz.options.map((option, i) => {
+              let style = "border-border bg-surface-light/30 hover:border-muted";
+              if (selectedAnswer !== null) {
+                if (i === quiz.answer) style = "border-success bg-success/10";
+                else if (i === selectedAnswer) style = "border-danger bg-danger/10";
+              }
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => !showExplanation && handleQuizAnswer(i)}
+                  disabled={showExplanation}
+                  className={`w-full text-left p-3 rounded-xl border text-sm transition-all ${style}`}
+                >
+                  {option}
+                </button>
+              );
+            })}
+          </div>
+          {showExplanation && (
+            <div className="space-y-2 animate-fade-in">
+              <div className="learning-callout">
+                <p className="text-sm text-foreground/90">{quiz.explanation}</p>
+              </div>
+              <button
+                type="button"
+                onClick={nextQuestion}
+                className="btn-secondary text-xs w-full"
+              >
+                Next Question
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* Actions */}
         <div className="flex justify-center gap-4">
           {isHost ? (
             <button
+              type="button"
               onClick={startGame}
               disabled={players.length < 1}
               className="btn-primary text-lg px-8 py-4 animate-pulse-glow"
@@ -196,6 +280,7 @@ function LobbyContent() {
 
         <p className="text-center">
           <button
+            type="button"
             onClick={() => router.push("/")}
             className="text-muted text-sm hover:text-foreground transition-colors"
           >

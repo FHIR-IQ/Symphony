@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { MAS_PATTERNS, type MASPatternKey } from "@/lib/game-utils";
 import { supabase } from "@/lib/supabase";
 
@@ -8,6 +9,29 @@ interface Props {
   teamId: string;
   teamName: string;
   onSubmitted: () => void;
+}
+
+function ScoreRing({ score, grade }: { score: number; grade: string }) {
+  const circumference = 283; // 2 * PI * 45
+  const offset = circumference - (score / 10) * circumference;
+  const color = score >= 8 ? "var(--success)" : score >= 6 ? "var(--accent)" : score >= 4 ? "var(--primary)" : "var(--danger)";
+
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      <svg width="120" height="120" viewBox="0 0 100 100" className="score-ring">
+        <circle cx="50" cy="50" r="45" className="score-ring-bg" />
+        <circle
+          cx="50" cy="50" r="45"
+          className="score-ring-fill"
+          style={{ strokeDashoffset: offset, stroke: color }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-3xl font-bold animate-bounce-in" style={{ color }}>{score}</span>
+        <span className="text-sm font-bold text-accent">{grade}</span>
+      </div>
+    </div>
+  );
 }
 
 export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props) {
@@ -31,7 +55,6 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
     setLoading(true);
 
     try {
-      // Get AI critique
       const response = await fetch("/api/ai-critique", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -47,7 +70,6 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
       const result = await response.json();
       setAiResult(result);
 
-      // Save to Supabase
       await supabase
         .from("teams")
         .update({
@@ -76,24 +98,56 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
     }
   }
 
+  const stepLabels = ["Impact Discovery", "Outcome Definition", "Agentic Strategy", "AI Review"];
+
   return (
     <div className="space-y-6">
+      {/* IMPACT Framework Reference */}
+      {step < 4 && (
+        <details className="glass-card p-4">
+          <summary className="text-sm font-semibold text-primary-light cursor-pointer">
+            How your strategy will be scored (IMPACT Framework)
+          </summary>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3 stagger-children">
+            {[
+              { letter: "I", label: "Interesting", desc: "Compelling to pharmacists & patients?" },
+              { letter: "M", label: "Meaningful", desc: "Drives real business value?" },
+              { letter: "P", label: "People-focused", desc: "Targets the right users with urgency?" },
+              { letter: "A", label: "Actionable", desc: "Can the team build & ship this?" },
+              { letter: "C", label: "Clear", desc: "Is the strategy well-articulated?" },
+              { letter: "T", label: "Testable", desc: "Can success be measured?" },
+            ].map((item) => (
+              <div key={item.letter} className="p-2 rounded-lg bg-surface-light/50">
+                <span className="text-xs font-bold text-accent">{item.letter}</span>
+                <span className="text-xs font-semibold ml-1">{item.label}</span>
+                <p className="text-xs text-muted mt-0.5">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+
       {/* Progress Steps */}
-      <div className="flex items-center justify-center gap-2 mb-8">
+      <div className="flex items-center justify-center gap-1 mb-8">
         {[1, 2, 3, 4].map((s) => (
-          <div key={s} className="flex items-center gap-2">
-            <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-                s <= step
-                  ? "bg-primary text-white"
-                  : "bg-surface-light text-muted"
-              }`}
-            >
-              {s < step ? "\u2713" : s}
+          <div key={s} className="flex items-center gap-1">
+            <div className="flex flex-col items-center gap-1">
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                  s <= step
+                    ? "bg-primary text-white"
+                    : "bg-surface-light text-muted"
+                }`}
+              >
+                {s < step ? "\u2713" : s}
+              </div>
+              <span className={`text-[10px] ${s === step ? "text-primary-light font-bold" : "text-muted"}`}>
+                {stepLabels[s - 1]}
+              </span>
             </div>
             {s < 4 && (
               <div
-                className={`w-12 h-0.5 ${
+                className={`w-8 h-0.5 mb-4 ${
                   s < step ? "bg-primary" : "bg-surface-light"
                 }`}
               />
@@ -106,11 +160,12 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
       {step === 1 && (
         <div className="space-y-4 animate-fade-in">
           <h3 className="text-xl font-bold">Step 1: Impact Discovery</h3>
-          <p className="text-muted text-sm">
-            Identify the critical pain point in pharmacy operations that your
-            team will solve. Think about the 48,000 pharmacies, 200+ daily
-            prescriptions per pharmacist, and 50%+ burnout rate.
-          </p>
+          <div className="learning-callout">
+            <p className="text-sm">
+              Great problem statements are <strong>specific</strong>, <strong>quantified</strong>, and focus on a <strong>real person&apos;s pain</strong>.
+              Think about the 48,000 pharmacies, 200+ daily prescriptions per pharmacist, and 50%+ burnout rate.
+            </p>
+          </div>
           <div className="space-y-3">
             <label className="text-sm font-medium text-primary-light">
               Problem Statement
@@ -122,11 +177,24 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
               className="input-field min-h-[120px] resize-none"
               maxLength={500}
             />
-            <p className="text-xs text-muted text-right">
-              {problemStatement.length}/500
-            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex gap-2">
+                {problemStatement.length > 0 && (
+                  <div className="flex gap-1 text-xs">
+                    <span className={problemStatement.length >= 50 ? "text-success" : "text-muted"}>
+                      {problemStatement.length >= 50 ? "\u2713" : "\u25CB"} 50+ chars
+                    </span>
+                    <span className={/\d/.test(problemStatement) ? "text-success" : "text-muted"}>
+                      {/\d/.test(problemStatement) ? "\u2713" : "\u25CB"} Has data
+                    </span>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-muted">{problemStatement.length}/500</p>
+            </div>
           </div>
           <button
+            type="button"
             onClick={() => setStep(2)}
             disabled={!problemStatement.trim()}
             className="btn-primary w-full"
@@ -140,10 +208,12 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
       {step === 2 && (
         <div className="space-y-4 animate-fade-in">
           <h3 className="text-xl font-bold">Step 2: Outcome Definition</h3>
-          <p className="text-muted text-sm">
-            Define the measurable behavioral change your solution will create.
-            Remember: outcomes are about changing behavior, not shipping features.
-          </p>
+          <div className="learning-callout">
+            <p className="text-sm">
+              Outcomes are <strong>behavioral changes</strong>, not features. Instead of &quot;build a dashboard&quot;, think &quot;reduce pharmacist lookup time from 5 min to 30 sec.&quot;
+              The JTBD framework helps you stay user-centered.
+            </p>
+          </div>
           <div className="space-y-3">
             <label className="text-sm font-medium text-primary-light">
               Target Outcome Metric
@@ -156,6 +226,16 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
               className="input-field"
               maxLength={200}
             />
+            {outcomeMetric.length > 0 && (
+              <div className="flex gap-2 text-xs">
+                <span className={/\d/.test(outcomeMetric) ? "text-success" : "text-muted"}>
+                  {/\d/.test(outcomeMetric) ? "\u2713" : "\u25CB"} Quantified
+                </span>
+                <span className={outcomeMetric.length >= 20 ? "text-success" : "text-muted"}>
+                  {outcomeMetric.length >= 20 ? "\u2713" : "\u25CB"} Specific
+                </span>
+              </div>
+            )}
           </div>
           <div className="space-y-3">
             <label className="text-sm font-medium text-primary-light">
@@ -170,10 +250,11 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
             />
           </div>
           <div className="flex gap-3">
-            <button onClick={() => setStep(1)} className="btn-secondary">
+            <button type="button" onClick={() => setStep(1)} className="btn-secondary">
               Back
             </button>
             <button
+              type="button"
               onClick={() => setStep(3)}
               disabled={!outcomeMetric.trim() || !jobToBeDone.trim()}
               className="btn-primary flex-1"
@@ -187,16 +268,22 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
       {/* Step 3: MAS Pattern */}
       {step === 3 && (
         <div className="space-y-4 animate-fade-in">
-          <h3 className="text-xl font-bold">Step 3: Agentic Strategy</h3>
-          <p className="text-muted text-sm">
-            Choose the multi-agent system pattern that best fits your clinical
-            problem. Explain why this architecture is superior for your use case.
-          </p>
-          <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <Image src="/images/strategy-brain.png" alt="" width={48} height={48} className="rounded-xl w-auto h-auto" />
+            <h3 className="text-xl font-bold">Step 3: Agentic Strategy</h3>
+          </div>
+          <div className="learning-callout">
+            <p className="text-sm">
+              Multi-Agent Systems (MAS) use specialized AI agents working together.
+              Pick the architecture that matches your problem &mdash; there&apos;s no &quot;best&quot; pattern, only the <strong>right fit</strong> for your use case.
+            </p>
+          </div>
+          <div className="space-y-3 stagger-children">
             {(Object.entries(MAS_PATTERNS) as [MASPatternKey, typeof MAS_PATTERNS[MASPatternKey]][]).map(
               ([key, pattern]) => (
                 <button
                   key={key}
+                  type="button"
                   onClick={() => setMasPattern(key)}
                   className={`w-full text-left p-4 rounded-xl border transition-all ${
                     masPattern === key
@@ -205,26 +292,30 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl font-mono text-primary-light">
+                    <span className="text-2xl font-mono text-primary-light w-8 text-center">
                       {pattern.icon}
                     </span>
-                    <div>
+                    <div className="flex-1">
                       <p className="font-semibold">{pattern.name}</p>
                       <p className="text-sm text-muted">{pattern.description}</p>
                       <p className="text-xs text-secondary mt-1">
                         Example: {pattern.example}
                       </p>
                     </div>
+                    {masPattern === key && (
+                      <span className="text-primary text-lg">\u2713</span>
+                    )}
                   </div>
                 </button>
               )
             )}
           </div>
           <div className="flex gap-3">
-            <button onClick={() => setStep(2)} className="btn-secondary">
+            <button type="button" onClick={() => setStep(2)} className="btn-secondary">
               Back
             </button>
             <button
+              type="button"
               onClick={handleSubmit}
               disabled={!masPattern || loading}
               className="btn-primary flex-1"
@@ -252,19 +343,9 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
             </p>
           </div>
 
-          {/* Score */}
-          <div className="text-center py-6">
-            <div className="inline-flex items-center gap-4">
-              <div className="text-6xl font-bold text-primary-light">
-                {aiResult.score}
-              </div>
-              <div className="text-left">
-                <div className="text-3xl font-bold text-accent">
-                  {aiResult.grade}
-                </div>
-                <div className="text-sm text-muted">Impact Score</div>
-              </div>
-            </div>
+          {/* Score Ring */}
+          <div className="flex justify-center py-4">
+            <ScoreRing score={aiResult.score} grade={aiResult.grade} />
           </div>
 
           {/* Critique */}
@@ -274,33 +355,41 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
 
           {/* Strengths & Weaknesses */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-success">Strengths</h4>
-              {aiResult.strengths.map((s, i) => (
-                <p key={i} className="text-sm text-muted flex items-start gap-2">
-                  <span className="text-success">+</span> {s}
-                </p>
-              ))}
+            <div className="glass-card p-4 space-y-2">
+              <h4 className="text-sm font-semibold text-success flex items-center gap-1">
+                <span className="text-base">+</span> Strengths
+              </h4>
+              <div className="stagger-children">
+                {aiResult.strengths.map((s, i) => (
+                  <p key={i} className="text-sm text-foreground/80 flex items-start gap-2 py-0.5">
+                    <span className="text-success shrink-0">\u2713</span> {s}
+                  </p>
+                ))}
+              </div>
             </div>
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-danger">Areas to Improve</h4>
-              {aiResult.weaknesses.map((w, i) => (
-                <p key={i} className="text-sm text-muted flex items-start gap-2">
-                  <span className="text-danger">-</span> {w}
-                </p>
-              ))}
+            <div className="glass-card p-4 space-y-2">
+              <h4 className="text-sm font-semibold text-danger flex items-center gap-1">
+                <span className="text-base">\u2191</span> Improve
+              </h4>
+              <div className="stagger-children">
+                {aiResult.weaknesses.map((w, i) => (
+                  <p key={i} className="text-sm text-foreground/80 flex items-start gap-2 py-0.5">
+                    <span className="text-accent shrink-0">\u25B6</span> {w}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Recommendation */}
-          <div className="p-3 rounded-xl border border-accent/30 bg-accent/5">
+          <div className="learning-callout">
             <p className="text-sm">
               <span className="font-semibold text-accent">Recommendation:</span>{" "}
               {aiResult.recommendation}
             </p>
           </div>
 
-          <button onClick={onSubmitted} className="btn-primary w-full">
+          <button type="button" onClick={onSubmitted} className="btn-primary w-full">
             Ready for Voting Phase
           </button>
         </div>

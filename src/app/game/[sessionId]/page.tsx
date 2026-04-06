@@ -8,6 +8,7 @@ import TeamSetup from "@/components/TeamSetup";
 import StrategyBuilder from "@/components/StrategyBuilder";
 import VotingDashboard from "@/components/VotingDashboard";
 import CEOVerdict from "@/components/CEOVerdict";
+import TeamChat from "@/components/TeamChat";
 
 type GamePhase = "teams" | "strategy" | "voting" | "finished";
 
@@ -128,28 +129,60 @@ export default function GamePage({ params }: { params: Promise<{ sessionId: stri
   return (
     <main className="flex-1 flex flex-col">
       {/* Top Bar */}
-      <header className="border-b border-border px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-lg font-bold bg-gradient-to-r from-primary-light to-secondary bg-clip-text text-transparent">
-            Impact Engine
-          </h1>
-          <span className="text-xs px-2 py-1 rounded-full bg-surface-light text-muted font-mono">
-            {session.code}
-          </span>
-        </div>
-        <div className="flex items-center gap-4">
+      <header className="border-b border-border px-6 py-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-primary-light to-secondary bg-clip-text text-transparent">
+              Impact Engine
+            </h1>
+            <span className="text-xs px-2 py-1 rounded-full bg-surface-light text-muted font-mono">
+              {session.code}
+            </span>
+          </div>
           <span className="text-sm text-muted">
             {players.length} players &middot; {teams.length} teams
           </span>
-          <div className="flex items-center gap-2">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                phase === "finished" ? "bg-accent" : "bg-success animate-pulse"
-              }`}
-            />
-            <span className="text-xs text-muted capitalize">{phase}</span>
-          </div>
         </div>
+
+        {/* Phase Progress */}
+        <div className="flex items-center gap-1">
+          {(["teams", "strategy", "voting", "finished"] as GamePhase[]).map((p, i) => {
+            const phaseLabels = { teams: "Teams", strategy: "Strategy", voting: "Voting", finished: "Results" };
+            const phaseIndex = ["teams", "strategy", "voting", "finished"].indexOf(phase);
+            const isActive = i === phaseIndex;
+            const isDone = i < phaseIndex;
+            return (
+              <div key={p} className="flex items-center flex-1 gap-1">
+                <div className="flex-1 flex flex-col items-center gap-0.5">
+                  <div
+                    className={`w-full h-1.5 rounded-full transition-all ${
+                      isDone ? "bg-success" : isActive ? "bg-primary" : "bg-surface-light"
+                    }`}
+                  />
+                  <span className={`text-[10px] ${isActive ? "text-primary-light font-bold" : isDone ? "text-success" : "text-muted"}`}>
+                    {phaseLabels[p]}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Team submission tracker during strategy phase */}
+        {phase === "strategy" && teams.length > 0 && (
+          <div className="flex items-center gap-2 text-xs text-muted">
+            <span>{teams.filter((t) => t.ai_score !== null).length}/{teams.length} teams submitted</span>
+            <div className="flex gap-1">
+              {teams.map((t) => (
+                <div
+                  key={t.id}
+                  className={`w-2 h-2 rounded-full ${t.ai_score !== null ? "bg-success" : "bg-surface-light"}`}
+                  title={`${t.name}: ${t.ai_score !== null ? "Submitted" : "Working..."}`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}
@@ -170,11 +203,14 @@ export default function GamePage({ params }: { params: Promise<{ sessionId: stri
           {phase === "strategy" && (
             <div className="space-y-6">
               {myTeam && !strategySubmitted ? (
-                <StrategyBuilder
-                  teamId={myTeam.id}
-                  teamName={myTeam.name}
-                  onSubmitted={handleStrategySubmitted}
-                />
+                <>
+                  <StrategyBuilder
+                    teamId={myTeam.id}
+                    teamName={myTeam.name}
+                    onSubmitted={handleStrategySubmitted}
+                  />
+                  <TeamChat teamId={myTeam.id} />
+                </>
               ) : strategySubmitted ? (
                 <div className="text-center space-y-4 py-12 animate-fade-in">
                   <div className="text-5xl">&#9989;</div>
@@ -218,6 +254,7 @@ export default function GamePage({ params }: { params: Promise<{ sessionId: stri
             <VotingDashboard
               sessionId={sessionId}
               teams={teams}
+              myTeamId={myTeam?.id || null}
               isHost={isHost}
               onFinish={handleFinishGame}
             />

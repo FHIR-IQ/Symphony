@@ -91,6 +91,32 @@ export interface Database {
           created_at?: string;
         };
       };
+      team_messages: {
+        Row: {
+          id: string;
+          team_id: string;
+          player_id: string;
+          player_name: string;
+          message: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          team_id: string;
+          player_id: string;
+          player_name: string;
+          message: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          team_id?: string;
+          player_id?: string;
+          player_name?: string;
+          message?: string;
+          created_at?: string;
+        };
+      };
       players: {
         Row: {
           id: string;
@@ -136,4 +162,5 @@ export type GameSession = Database["public"]["Tables"]["game_sessions"]["Row"];
 export type Team = Database["public"]["Tables"]["teams"]["Row"];
 export type Vote = Database["public"]["Tables"]["votes"]["Row"];
 export type Player = Database["public"]["Tables"]["players"]["Row"];
+export type TeamMessage = Database["public"]["Tables"]["team_messages"]["Row"];
 export type GameStatus = GameSession["status"];

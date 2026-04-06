@@ -75,8 +75,22 @@ CREATE POLICY "Allow all access to players" ON public.players FOR ALL USING (tru
 CREATE POLICY "Allow all access to teams" ON public.teams FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all access to votes" ON public.votes FOR ALL USING (true) WITH CHECK (true);
 
+-- Team Chat Messages
+CREATE TABLE public.team_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    team_id UUID REFERENCES public.teams(id) ON DELETE CASCADE,
+    player_id TEXT NOT NULL,
+    player_name TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.team_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all access to team_messages" ON public.team_messages FOR ALL USING (true) WITH CHECK (true);
+
 -- Enable Realtime for all tables
 ALTER PUBLICATION supabase_realtime ADD TABLE public.game_sessions;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.players;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.teams;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.votes;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.team_messages;

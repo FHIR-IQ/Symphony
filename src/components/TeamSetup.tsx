@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { generatePlayerId } from "@/lib/game-utils";
 import type { Player, Team } from "@/lib/database.types";
@@ -67,7 +68,8 @@ export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsRe
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
+      <div className="text-center space-y-3">
+        <Image src="/images/team-huddle.png" alt="" width={120} height={120} className="mx-auto animate-bounce-in rounded-2xl w-auto h-auto" />
         <h2 className="text-2xl font-bold">Form Your Squads</h2>
         <p className="text-muted text-sm">
           Create or join a team of 3-4 product managers
@@ -112,6 +114,11 @@ export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsRe
         <h3 className="font-semibold text-sm text-muted">
           Teams ({teams.length})
         </h3>
+        <div className="learning-callout">
+          <p className="text-xs text-foreground/80">
+            Teams of <strong>3&ndash;4</strong> collaborate best. Mix different perspectives &mdash; pair a data thinker with a clinical expert for stronger strategies.
+          </p>
+        </div>
         {teams.map((team) => {
           const teamPlayers = players.filter((p) => p.team_id === team.id);
           return (

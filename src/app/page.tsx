@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { generateRoomCode, generatePlayerId, setPlayerName } from "@/lib/game-utils";
 
@@ -89,6 +90,14 @@ export default function Home() {
       <div className="max-w-lg w-full space-y-8">
         {/* Hero */}
         <div className="text-center space-y-4 animate-fade-in">
+          <Image
+            src="/images/hero-rocket.png"
+            alt="Impact Engine"
+            width={180}
+            height={180}
+            className="mx-auto animate-bounce-in w-auto h-auto"
+            priority
+          />
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 text-primary-light text-sm font-medium">
             AI Office Hours Workshop
           </div>

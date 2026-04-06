@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.66",
+    "@ai-sdk/google": "^3.0.59",
     "@supabase/supabase-js": "^2.101.1",
     "ai": "^6.0.146",
     "canvas-confetti": "^1.9.4",

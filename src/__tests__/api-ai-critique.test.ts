@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the AI SDK before importing the route
-vi.mock("@ai-sdk/anthropic", () => ({
-  anthropic: vi.fn(() => "mock-model"),
+vi.mock("@ai-sdk/google", () => ({
+  google: vi.fn(() => "mock-model"),
 }));
 
 vi.mock("ai", () => ({

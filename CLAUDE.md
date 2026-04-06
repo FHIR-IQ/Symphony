@@ -21,7 +21,7 @@ npm run test:e2e # Run Playwright E2E tests (starts dev server automatically)
 - **Next.js 15** (App Router, React 19, TypeScript)
 - **Supabase** (Postgres + Realtime subscriptions for live multiplayer)
 - **Tailwind CSS v4** (via @tailwindcss/postcss)
-- **Vercel AI SDK** (`ai` + `@ai-sdk/anthropic`) for Claude API calls
+- **Vercel AI SDK** (`ai` + `@ai-sdk/google`) for Gemini 2.5 Flash API calls
 - **Deployment**: Vercel
 
 ## Architecture
@@ -60,11 +60,12 @@ Schema lives in `supabase/schema.sql`. Four tables: `game_sessions`, `teams`, `p
 ### Key Domain Concepts
 
 - **MAS Patterns**: Multi-Agent System architecture patterns (Sequential, Parallel, Coordinator) that teams select as part of their strategy — defined in `src/lib/game-utils.ts`
-- **IMPACT Framework**: The scoring rubric Claude uses to evaluate strategies (Interesting, Meaningful, People-focused, Actionable, Clear, Testable)
+- **IMPACT Framework**: The scoring rubric Gemini uses to evaluate strategies (Interesting, Meaningful, People-focused, Actionable, Clear, Testable)
 
 ## Environment Variables
 
 Copy `.env.example` to `.env.local`:
 - `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase client access
 - `SUPABASE_SERVICE_ROLE_KEY` — Server-side Supabase access (used in vote API)
+- `GOOGLE_GENERATIVE_AI_API_KEY` — Gemini API key (used by Vercel AI SDK)
 - `ANTHROPIC_API_KEY` — Claude API key (used by Vercel AI SDK)

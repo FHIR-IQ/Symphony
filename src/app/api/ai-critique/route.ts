@@ -1,4 +1,4 @@
-import { anthropic } from "@ai-sdk/anthropic";
+import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
       await request.json();
 
     const { text } = await generateText({
-      model: anthropic("claude-sonnet-4-20250514"),
+      model: google("gemini-2.5-flash"),
       system: `You are a senior healthcare executive and product strategy advisor evaluating product pitches for a pharmacy technology company (Outcomes.com) that operates a network of 48,000 pharmacies.
 
 You evaluate proposals using the IMPACT framework:
@@ -41,7 +41,8 @@ Respond in valid JSON format with this structure:
 Score this strategy 1-10 using the IMPACT framework. Be constructive but rigorous.`,
     });
 
-    const parsed = JSON.parse(text);
+    const cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "");
+    const parsed = JSON.parse(cleaned);
     return NextResponse.json(parsed);
   } catch (error) {
     console.error("AI critique error:", error);

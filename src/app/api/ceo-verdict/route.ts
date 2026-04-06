@@ -1,4 +1,4 @@
-import { anthropic } from "@ai-sdk/anthropic";
+import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       .join("\n\n");
 
     const { text } = await generateText({
-      model: anthropic("claude-sonnet-4-20250514"),
+      model: google("gemini-2.5-flash"),
       system: `You are the CEO of Outcomes.com, a pharmacy technology company operating 48,000 pharmacies nationwide. You are making a final funding decision at an internal product innovation competition.
 
 You are charismatic, data-driven, and passionate about improving pharmacy care. You speak with authority but also humor.
@@ -53,7 +53,8 @@ Respond in valid JSON:
       prompt: `Here are the teams competing in today's "Billion Dollar Pivot" challenge:\n\n${teamsDescription}\n\nCalculate the weighted score for each team (AI Score * 0.4 + Peer Votes * 0.6), pick the winner, and assign category awards. Example award categories: "Best Problem Discovery", "Most Creative Architecture", "Clearest Outcome Metric", "Most Ambitious Vision", "Best Use of AI Agents". Every team must receive at least one award.`,
     });
 
-    const parsed = JSON.parse(text);
+    const cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "");
+    const parsed = JSON.parse(cleaned);
     return NextResponse.json(parsed);
   } catch (error) {
     console.error("CEO verdict error:", error);

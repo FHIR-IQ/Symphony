@@ -45,7 +45,8 @@ export default function Home() {
       is_host: true,
     });
 
-    router.push(`/lobby?session=${data.id}&code=${code}`);
+    const testParam = new URLSearchParams(window.location.search).has("test") ? "&test=true" : "";
+    router.push(`/lobby?session=${data.id}&code=${code}${testParam}`);
   }
 
   async function handleJoin() {
@@ -82,7 +83,8 @@ export default function Home() {
       is_host: false,
     });
 
-    router.push(`/lobby?session=${data.id}&code=${data.code}`);
+    const testParam2 = new URLSearchParams(window.location.search).has("test") ? "&test=true" : "";
+    router.push(`/lobby?session=${data.id}&code=${data.code}${testParam2}`);
   }
 
   return (

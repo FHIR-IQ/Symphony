@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { generatePlayerId } from "@/lib/game-utils";
+import { isTestMode } from "@/lib/test-mode";
+import TestModePanel from "@/components/TestModePanel";
 import type { Player, GameSession } from "@/lib/database.types";
 
 const WARMUP_QUESTIONS = [
@@ -56,6 +58,7 @@ function LobbyContent() {
   const [quizIndex, setQuizIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [testMode] = useState(() => isTestMode());
   const playerId = typeof window !== "undefined" ? generatePlayerId() : "";
 
   const quiz = WARMUP_QUESTIONS[quizIndex % WARMUP_QUESTIONS.length];
@@ -98,7 +101,7 @@ function LobbyContent() {
           const updated = payload.new as GameSession;
           setSession(updated);
           if (updated.status === "planning") {
-            router.push(`/game/${sessionId}`);
+            router.push(`/game/${sessionId}${testMode ? "?test=true" : ""}`);
           }
         }
       )
@@ -111,7 +114,7 @@ function LobbyContent() {
 
   useEffect(() => {
     if (session && session.status !== "lobby") {
-      router.push(`/game/${sessionId}`);
+      router.push(`/game/${sessionId}${testMode ? "?test=true" : ""}`);
     }
   }, [session, sessionId, router]);
 
@@ -288,6 +291,10 @@ function LobbyContent() {
           </button>
         </p>
       </div>
+
+      {testMode && sessionId && (
+        <TestModePanel sessionId={sessionId} phase="lobby" onAction={fetchData} />
+      )}
     </main>
   );
 }

@@ -9,6 +9,8 @@ import StrategyBuilder from "@/components/StrategyBuilder";
 import VotingDashboard from "@/components/VotingDashboard";
 import CEOVerdict from "@/components/CEOVerdict";
 import TeamChat from "@/components/TeamChat";
+import TestModePanel from "@/components/TestModePanel";
+import { isTestMode } from "@/lib/test-mode";
 
 type GamePhase = "teams" | "strategy" | "voting" | "finished";
 
@@ -20,6 +22,7 @@ export default function GamePage({ params }: { params: Promise<{ sessionId: stri
   const [phase, setPhase] = useState<GamePhase>("teams");
   const [isHost, setIsHost] = useState(false);
   const [strategySubmitted, setStrategySubmitted] = useState(false);
+  const [testMode] = useState(() => isTestMode());
   const playerId = typeof window !== "undefined" ? generatePlayerId() : "";
 
   const fetchAll = useCallback(async () => {
@@ -276,6 +279,10 @@ export default function GamePage({ params }: { params: Promise<{ sessionId: stri
           )}
         </div>
       </div>
+
+      {testMode && (
+        <TestModePanel sessionId={sessionId} phase={phase} onAction={fetchAll} />
+      )}
     </main>
   );
 }

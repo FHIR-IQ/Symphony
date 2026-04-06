@@ -1,27 +1,67 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project Overview
 
-Symphony is an AI Summary project (based on the README.md). The repository is currently in initial setup phase with MIT License.
+**Impact Engine** is an interactive, real-time workshop application for the "AI Office Hours" at Outcomes.com. It facilitates "The Billion Dollar Pivot" — a competitive simulation where product management squads design AI-powered pharmacy strategies and compete for "CEO funding."
 
-## Repository Status
+## Tech Stack
 
-This is a newly initialized repository without an established codebase structure yet. When developing in this repository:
+- **Framework**: Next.js 15 (App Router, TypeScript)
+- **Backend/Auth**: Supabase (Postgres + Realtime)
+- **Styling**: Tailwind CSS v4
+- **AI**: Vercel AI SDK + Anthropic Claude
+- **Deployment**: Vercel
 
-1. **Project Type**: To be determined based on first implementation
-2. **License**: MIT License (permissive open-source)
+## Build & Run Commands
 
-## Development Guidelines
+```bash
+npm run dev      # Start development server
+npm run build    # Production build
+npm run start    # Start production server
+npm run lint     # Run ESLint
+```
 
-As this repository grows, update this file with:
-- Build and run commands once a build system is established
-- Testing commands once a test framework is chosen
-- Linting and formatting commands once code standards are defined
-- Architecture documentation once the core structure is implemented
+## Project Structure
 
-## Notes for Future Development
+```
+src/
+  app/
+    page.tsx                    # Home — create/join game
+    lobby/page.tsx              # Lobby — waiting room with live presence
+    game/[sessionId]/page.tsx   # Main game — phases: teams, strategy, voting, finished
+    api/
+      ai-critique/route.ts     # AI strategy evaluation endpoint
+      ceo-verdict/route.ts     # CEO agent final verdict endpoint
+      vote/route.ts             # Vote casting endpoint
+  components/
+    TeamSetup.tsx               # Team creation and joining
+    StrategyBuilder.tsx         # Multi-step strategy form + AI critique
+    VotingDashboard.tsx         # Real-time voting with animated bars
+    CEOVerdict.tsx              # Final reveal with confetti
+  lib/
+    supabase.ts                 # Supabase client
+    database.types.ts           # TypeScript types for Supabase schema
+    game-utils.ts               # Room codes, player IDs, MAS patterns
+```
 
-- The project name "Symphony" suggests potential for orchestration, coordination, or harmonious integration of components
-- "AI Summary" in README suggests this may involve AI-powered summarization capabilities
+## Database
+
+Schema is in `supabase/schema.sql`. Run it in Supabase SQL Editor to initialize.
+
+## Environment Variables
+
+Copy `.env.example` to `.env.local` and fill in:
+- `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key
+- `ANTHROPIC_API_KEY` — Anthropic API key for Claude
+
+## Game Flow
+
+1. **Home**: Host creates a room, players join with a 6-character code
+2. **Lobby**: Real-time player list, host starts game
+3. **Team Setup**: Players form squads of 3-4
+4. **Strategy Phase**: Teams fill out Problem Statement, Outcome Metric, JTBD, and MAS Pattern
+5. **AI Review**: Claude evaluates each strategy using the IMPACT framework (1-10 score)
+6. **Voting**: All players vote on best strategy, real-time animated leaderboard
+7. **CEO Verdict**: AI CEO announces the "fully funded" winner with confetti

@@ -12,12 +12,14 @@ interface Props {
   teams: Team[];
   isHost: boolean;
   onTeamsReady: () => void;
-  onDataChanged?: () => void;
+  onDataChanged?: () => Promise<void> | void;
 }
 
 export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsReady, onDataChanged }: Props) {
   const [newTeamName, setNewTeamName] = useState("");
   const [creating, setCreating] = useState(false);
+  const [joining, setJoining] = useState(false);
+  const [error, setError] = useState("");
   const playerId = typeof window !== "undefined" ? generatePlayerId() : "";
 
   const myPlayer = players.find((p) => p.id === playerId);
@@ -26,45 +28,81 @@ export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsRe
   async function createTeam() {
     if (!newTeamName.trim()) return;
     setCreating(true);
+    setError("");
 
-    const { data, error } = await supabase
-      .from("teams")
-      .insert({
-        session_id: sessionId,
-        name: newTeamName.trim(),
-        members: [playerId],
-      })
-      .select()
-      .single();
+    try {
+      const { data: team, error: teamError } = await supabase
+        .from("teams")
+        .insert({
+          session_id: sessionId,
+          name: newTeamName.trim(),
+          members: [playerId],
+        })
+        .select()
+        .single();
 
-    if (data && !error) {
-      await supabase
+      if (teamError || !team) {
+        setError(`Failed to create team: ${teamError?.message || "Unknown error"}`);
+        return;
+      }
+
+      const { error: playerError } = await supabase
         .from("players")
-        .update({ team_id: data.id })
+        .update({ team_id: team.id })
         .eq("id", playerId);
+
+      if (playerError) {
+        setError(`Failed to assign to team: ${playerError.message}`);
+        return;
+      }
+
+      setNewTeamName("");
+    } finally {
+      setCreating(false);
     }
 
-    setNewTeamName("");
-    setCreating(false);
-    onDataChanged?.();
+    await onDataChanged?.();
   }
 
   async function joinTeam(teamId: string) {
-    const team = teams.find((t) => t.id === teamId);
-    if (!team) return;
+    if (joining) return;
+    setJoining(true);
+    setError("");
 
-    const updatedMembers = [...(team.members || []), playerId];
-    await supabase
-      .from("teams")
-      .update({ members: updatedMembers })
-      .eq("id", teamId);
+    try {
+      const team = teams.find((t) => t.id === teamId);
+      if (!team) {
+        setError("Team not found");
+        return;
+      }
 
-    await supabase
-      .from("players")
-      .update({ team_id: teamId })
-      .eq("id", playerId);
+      // Update team members array
+      const updatedMembers = [...(team.members || []), playerId];
+      const { error: membersError } = await supabase
+        .from("teams")
+        .update({ members: updatedMembers })
+        .eq("id", teamId);
 
-    onDataChanged?.();
+      if (membersError) {
+        setError(`Failed to update team: ${membersError.message}`);
+        return;
+      }
+
+      // Update player's team_id
+      const { error: playerError } = await supabase
+        .from("players")
+        .update({ team_id: teamId })
+        .eq("id", playerId);
+
+      if (playerError) {
+        setError(`Failed to join team: ${playerError.message}`);
+        return;
+      }
+    } finally {
+      setJoining(false);
+    }
+
+    await onDataChanged?.();
   }
 
   const allPlayersOnTeams = players.every((p) => p.team_id);
@@ -78,6 +116,12 @@ export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsRe
           Create or join a team of 3-4 product managers
         </p>
       </div>
+
+      {error && (
+        <div className="glass-card p-3 border-danger/50">
+          <p className="text-sm text-danger">{error}</p>
+        </div>
+      )}
 
       {/* My Status */}
       {myTeam ? (
@@ -105,7 +149,7 @@ export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsRe
                 disabled={!newTeamName.trim() || creating}
                 className="btn-primary"
               >
-                Create
+                {creating ? "Creating..." : "Create"}
               </button>
             </div>
           </div>
@@ -142,9 +186,10 @@ export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsRe
                 {!myTeam && teamPlayers.length < 4 && (
                   <button
                     onClick={() => joinTeam(team.id)}
+                    disabled={joining}
                     className="btn-secondary text-xs px-3 py-1.5"
                   >
-                    Join
+                    {joining ? "Joining..." : "Join"}
                   </button>
                 )}
               </div>

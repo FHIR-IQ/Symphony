@@ -38,11 +38,12 @@ export default function Home() {
       return;
     }
 
-    await supabase.from("players").insert({
+    await supabase.from("players").upsert({
       session_id: data.id,
       name: name.trim(),
       id: playerId,
       is_host: true,
+      team_id: null,
     });
 
     const testParam = new URLSearchParams(window.location.search).has("test") ? "&test=true" : "";
@@ -76,11 +77,12 @@ export default function Home() {
       return;
     }
 
-    await supabase.from("players").insert({
+    await supabase.from("players").upsert({
       session_id: data.id,
       name: name.trim(),
       id: playerId,
       is_host: false,
+      team_id: null,
     });
 
     const testParam2 = new URLSearchParams(window.location.search).has("test") ? "&test=true" : "";

@@ -79,6 +79,7 @@ export default function GamePage({ params }: { params: Promise<{ sessionId: stri
   const myTeam = teams.find((t) => t.id === myPlayer?.team_id);
 
   async function handleTeamsReady() {
+    await fetchAll();
     setPhase("strategy");
   }
 
@@ -199,6 +200,7 @@ export default function GamePage({ params }: { params: Promise<{ sessionId: stri
               teams={teams}
               isHost={isHost}
               onTeamsReady={handleTeamsReady}
+              onDataChanged={fetchAll}
             />
           )}
 

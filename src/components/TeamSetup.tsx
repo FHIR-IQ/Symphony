@@ -12,9 +12,10 @@ interface Props {
   teams: Team[];
   isHost: boolean;
   onTeamsReady: () => void;
+  onDataChanged?: () => void;
 }
 
-export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsReady }: Props) {
+export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsReady, onDataChanged }: Props) {
   const [newTeamName, setNewTeamName] = useState("");
   const [creating, setCreating] = useState(false);
   const playerId = typeof window !== "undefined" ? generatePlayerId() : "";
@@ -45,10 +46,10 @@ export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsRe
 
     setNewTeamName("");
     setCreating(false);
+    onDataChanged?.();
   }
 
   async function joinTeam(teamId: string) {
-    // Add to team members array
     const team = teams.find((t) => t.id === teamId);
     if (!team) return;
 
@@ -62,6 +63,8 @@ export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsRe
       .from("players")
       .update({ team_id: teamId })
       .eq("id", playerId);
+
+    onDataChanged?.();
   }
 
   const allPlayersOnTeams = players.every((p) => p.team_id);

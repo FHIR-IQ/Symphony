@@ -225,6 +225,7 @@ export default function GamePage({ params }: { params: Promise<{ sessionId: stri
                     <button
                       onClick={handleStartVoting}
                       className="btn-primary mt-4"
+                      data-testid="start-voting"
                     >
                       Start Voting Phase
                     </button>
@@ -244,6 +245,7 @@ export default function GamePage({ params }: { params: Promise<{ sessionId: stri
                   <button
                     onClick={handleStartVoting}
                     className="btn-secondary"
+                    data-testid="skip-to-voting"
                   >
                     Skip to Voting (Host)
                   </button>

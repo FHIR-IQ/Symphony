@@ -162,6 +162,7 @@ export default function TeamSetup({ sessionId, players, teams, isHost, onTeamsRe
             onClick={onTeamsReady}
             disabled={teams.length < 1}
             className="btn-primary px-8"
+            data-testid="begin-strategy"
           >
             {allPlayersOnTeams
               ? "Begin Strategy Phase"

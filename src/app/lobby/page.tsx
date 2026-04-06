@@ -110,13 +110,13 @@ function LobbyContent() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [sessionId, fetchData, router]);
+  }, [sessionId, fetchData, router, testMode]);
 
   useEffect(() => {
     if (session && session.status !== "lobby") {
       router.push(`/game/${sessionId}${testMode ? "?test=true" : ""}`);
     }
-  }, [session, sessionId, router]);
+  }, [session, sessionId, router, testMode]);
 
   async function startGame() {
     if (!sessionId) return;
@@ -124,6 +124,8 @@ function LobbyContent() {
       .from("game_sessions")
       .update({ status: "planning" })
       .eq("id", sessionId);
+    // Navigate directly for the host instead of waiting for realtime
+    router.push(`/game/${sessionId}${testMode ? "?test=true" : ""}`);
   }
 
   function copyCode() {

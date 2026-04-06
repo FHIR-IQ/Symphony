@@ -220,6 +220,24 @@ export default function Home() {
           )}
         </div>
 
+        {/* Test Mode Entry */}
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => {
+              const url = new URL(window.location.href);
+              url.searchParams.set("test", "true");
+              window.history.replaceState({}, "", url.toString());
+              setName("Test Host");
+              setMode("create");
+            }}
+            className="text-xs text-muted hover:text-accent transition-colors"
+            data-testid="test-mode-btn"
+          >
+            Enter Test Mode
+          </button>
+        </div>
+
         {/* Footer */}
         <p className="text-center text-muted text-xs">
           Built for Outcomes.com AI Office Hours &middot; Impact-First Product Management

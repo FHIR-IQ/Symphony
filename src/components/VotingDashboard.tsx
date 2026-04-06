@@ -269,6 +269,7 @@ export default function VotingDashboard({ sessionId, teams, myTeamId, isHost, on
             type="button"
             onClick={startCountdown}
             className="btn-primary text-lg px-8 py-4 animate-pulse-glow"
+            data-testid="reveal-votes"
           >
             Reveal Vote Results {allVoted ? "(All votes in!)" : ""}
           </button>
@@ -277,7 +278,7 @@ export default function VotingDashboard({ sessionId, teams, myTeamId, isHost, on
 
       {isHost && revealed && (
         <div className="text-center pt-4">
-          <button type="button" onClick={onFinish} className="btn-primary text-lg px-8 py-4 animate-pulse-glow">
+          <button type="button" onClick={onFinish} className="btn-primary text-lg px-8 py-4 animate-pulse-glow" data-testid="reveal-verdict">
             Reveal CEO Verdict
           </button>
         </div>

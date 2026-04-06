@@ -121,6 +121,7 @@ export default function CEOVerdict({ sessionId, teams }: Props) {
           type="button"
           onClick={() => setRevealed(true)}
           className="btn-primary text-xl px-12 py-5 animate-pulse-glow"
+          data-testid="reveal-winner"
         >
           Reveal the Winner
         </button>

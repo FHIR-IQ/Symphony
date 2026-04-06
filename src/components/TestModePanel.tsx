@@ -29,7 +29,7 @@ export default function TestModePanel({ sessionId, phase, onAction }: Props) {
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <details className="glass-card border-accent/50">
+      <details className="glass-card border-accent/50" data-testid="test-mode-panel" open>
         <summary className="px-4 py-2 cursor-pointer text-xs font-bold text-accent uppercase tracking-wider">
           Test Mode
         </summary>
@@ -38,6 +38,7 @@ export default function TestModePanel({ sessionId, phase, onAction }: Props) {
             <>
               <button
                 type="button"
+                data-testid="add-fake-players"
                 onClick={() => run("players", () => addFakePlayers(sessionId, 6))}
                 disabled={loading !== null}
                 className="w-full text-left text-xs px-3 py-2 rounded-lg bg-surface-light hover:bg-border transition-colors disabled:opacity-50"
@@ -46,6 +47,7 @@ export default function TestModePanel({ sessionId, phase, onAction }: Props) {
               </button>
               <button
                 type="button"
+                data-testid="add-3-fake-players"
                 onClick={() => run("players3", () => addFakePlayers(sessionId, 3))}
                 disabled={loading !== null}
                 className="w-full text-left text-xs px-3 py-2 rounded-lg bg-surface-light hover:bg-border transition-colors disabled:opacity-50"
@@ -58,6 +60,7 @@ export default function TestModePanel({ sessionId, phase, onAction }: Props) {
           {(phase === "lobby" || phase === "teams") && (
             <button
               type="button"
+              data-testid="auto-create-teams"
               onClick={() => run("teams", () => createFakeTeams(sessionId))}
               disabled={loading !== null}
               className="w-full text-left text-xs px-3 py-2 rounded-lg bg-surface-light hover:bg-border transition-colors disabled:opacity-50"
@@ -69,6 +72,7 @@ export default function TestModePanel({ sessionId, phase, onAction }: Props) {
           {phase === "strategy" && (
             <button
               type="button"
+              data-testid="fill-strategies"
               onClick={() => run("strategies", () => fillFakeStrategies(sessionId))}
               disabled={loading !== null}
               className="w-full text-left text-xs px-3 py-2 rounded-lg bg-surface-light hover:bg-border transition-colors disabled:opacity-50"
@@ -80,6 +84,7 @@ export default function TestModePanel({ sessionId, phase, onAction }: Props) {
           {phase === "voting" && (
             <button
               type="button"
+              data-testid="simulate-votes"
               onClick={() => run("votes", () => simulateFakeVotes(sessionId))}
               disabled={loading !== null}
               className="w-full text-left text-xs px-3 py-2 rounded-lg bg-surface-light hover:bg-border transition-colors disabled:opacity-50"

@@ -59,7 +59,9 @@ export async function createFakeTeams(sessionId: string): Promise<void> {
 
   if (!players || players.length < 2) return;
 
-  const unassigned = players.filter((p) => !p.team_id);
+  // Skip the host so they can manually choose which team to join
+  const hostPlayer = players.find((p) => p.is_host);
+  const unassigned = players.filter((p) => !p.team_id && !p.is_host);
   const teamCount = Math.min(TEAM_NAMES.length, Math.max(2, Math.ceil(unassigned.length / 3)));
 
   for (let i = 0; i < teamCount; i++) {
@@ -75,10 +77,12 @@ export async function createFakeTeams(sessionId: string): Promise<void> {
 
     if (!team) continue;
 
-    // Assign players round-robin
+    // Assign fake players round-robin
     const teamPlayers = unassigned.filter((_, idx) => idx % teamCount === i);
     const memberIds = teamPlayers.map((p) => p.id);
 
+    // Also add the host to the first team's members list (but don't set their team_id)
+    // so the team isn't empty, but the host still sees Join buttons
     await supabase
       .from("teams")
       .update({ members: memberIds })

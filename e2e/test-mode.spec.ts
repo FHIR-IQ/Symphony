@@ -46,9 +46,14 @@ test.describe("Full Game Flow with Test Mode", () => {
     await expect(page.getByText("Impact Engine")).toBeVisible({ timeout: 10000 });
     await expect(page.getByText("Form Your Squads")).toBeVisible({ timeout: 10000 });
 
-    // Auto-create teams
+    // Auto-create teams (host is left unassigned so they can choose)
     await page.getByTestId("auto-create-teams").click();
     await page.waitForTimeout(2000);
+
+    // Host joins a team
+    const joinBtn = page.getByRole("button", { name: "Join" }).first();
+    await joinBtn.click({ timeout: 5000 });
+    await page.waitForTimeout(1000);
 
     // Begin strategy phase
     await page.getByTestId("begin-strategy").click({ timeout: 10000 });

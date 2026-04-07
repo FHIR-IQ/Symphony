@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { MAS_PATTERNS, type MASPatternKey } from "@/lib/game-utils";
 import { supabase } from "@/lib/supabase";
+import { AI_TERM_SPOTLIGHTS } from "@/lib/ai-knowledge";
 
 interface Props {
   teamId: string;
@@ -100,6 +101,14 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
 
   const stepLabels = ["Impact Discovery", "Outcome Definition", "Agentic Strategy", "AI Review"];
 
+  // Curated AI term spotlights for each step (by term name)
+  const stepSpotlights = [
+    AI_TERM_SPOTLIGHTS.find((t) => t.term === "RAG"),
+    AI_TERM_SPOTLIGHTS.find((t) => t.term === "Evals"),
+    AI_TERM_SPOTLIGHTS.find((t) => t.term === "A2A (Agent-to-Agent)"),
+    AI_TERM_SPOTLIGHTS.find((t) => t.term === "Guardrails"),
+  ];
+
   return (
     <div className="space-y-6">
       {/* IMPACT Framework Reference */}
@@ -193,6 +202,13 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
               <p className="text-xs text-muted">{problemStatement.length}/500</p>
             </div>
           </div>
+          {stepSpotlights[0] && (
+            <div className="p-3 rounded-xl bg-secondary/5 border border-secondary/20 space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">PM Term: {stepSpotlights[0].term}</p>
+              <p className="text-xs text-foreground/80">{stepSpotlights[0].definition}</p>
+              <p className="text-xs text-accent italic">{stepSpotlights[0].analogy}</p>
+            </div>
+          )}
           <button
             type="button"
             onClick={() => setStep(2)}
@@ -249,6 +265,13 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
               maxLength={300}
             />
           </div>
+          {stepSpotlights[1] && (
+            <div className="p-3 rounded-xl bg-secondary/5 border border-secondary/20 space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">PM Term: {stepSpotlights[1].term}</p>
+              <p className="text-xs text-foreground/80">{stepSpotlights[1].definition}</p>
+              <p className="text-xs text-accent italic">{stepSpotlights[1].analogy}</p>
+            </div>
+          )}
           <div className="flex gap-3">
             <button type="button" onClick={() => setStep(1)} className="btn-secondary">
               Back
@@ -310,6 +333,13 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
               )
             )}
           </div>
+          {stepSpotlights[2] && (
+            <div className="p-3 rounded-xl bg-secondary/5 border border-secondary/20 space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">PM Term: {stepSpotlights[2].term}</p>
+              <p className="text-xs text-foreground/80">{stepSpotlights[2].definition}</p>
+              <p className="text-xs text-accent italic">{stepSpotlights[2].analogy}</p>
+            </div>
+          )}
           <div className="flex gap-3">
             <button type="button" onClick={() => setStep(2)} className="btn-secondary">
               Back
@@ -388,6 +418,14 @@ export default function StrategyBuilder({ teamId, teamName, onSubmitted }: Props
               {aiResult.recommendation}
             </p>
           </div>
+
+          {stepSpotlights[3] && (
+            <div className="p-3 rounded-xl bg-secondary/5 border border-secondary/20 space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-secondary">PM Term: {stepSpotlights[3].term}</p>
+              <p className="text-xs text-foreground/80">{stepSpotlights[3].definition}</p>
+              <p className="text-xs text-accent italic">{stepSpotlights[3].analogy}</p>
+            </div>
+          )}
 
           <button type="button" onClick={onSubmitted} className="btn-primary w-full">
             Ready for Voting Phase

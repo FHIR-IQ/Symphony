@@ -231,6 +231,37 @@ export default function CEOVerdict({ sessionId, teams }: Props) {
         </div>
       </div>
 
+      {/* AI Knowledge Recap */}
+      <div className="glass-card p-5 space-y-3 animate-slide-up">
+        <p className="text-sm font-semibold text-secondary uppercase tracking-wider">AI Terms Every PM Should Know</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="p-3 rounded-xl bg-surface-light/50 space-y-1">
+            <p className="text-xs font-bold text-accent">MCP (Model Context Protocol)</p>
+            <p className="text-xs text-foreground/70">The &quot;USB-C for AI&quot; &mdash; one universal standard for connecting AI to tools, adopted across Anthropic, OpenAI, and Google.</p>
+          </div>
+          <div className="p-3 rounded-xl bg-surface-light/50 space-y-1">
+            <p className="text-xs font-bold text-accent">A2A (Agent-to-Agent)</p>
+            <p className="text-xs text-foreground/70">Google&apos;s protocol for AI agents to discover each other and collaborate &mdash; the Bluetooth of AI.</p>
+          </div>
+          <div className="p-3 rounded-xl bg-surface-light/50 space-y-1">
+            <p className="text-xs font-bold text-accent">RAG (Retrieval Augmented Generation)</p>
+            <p className="text-xs text-foreground/70">An open-book exam for AI &mdash; retrieve relevant docs first, then generate grounded answers.</p>
+          </div>
+          <div className="p-3 rounded-xl bg-surface-light/50 space-y-1">
+            <p className="text-xs font-bold text-accent">Guardrails &amp; Evals</p>
+            <p className="text-xs text-foreground/70">Bowling bumpers + report cards for AI. Define what &quot;good&quot; looks like and test before you ship.</p>
+          </div>
+          <div className="p-3 rounded-xl bg-surface-light/50 space-y-1">
+            <p className="text-xs font-bold text-accent">Prompt Injection</p>
+            <p className="text-xs text-foreground/70">SQL injection for AI &mdash; malicious inputs that override instructions. Every AI feature needs defenses.</p>
+          </div>
+          <div className="p-3 rounded-xl bg-surface-light/50 space-y-1">
+            <p className="text-xs font-bold text-accent">Human-in-the-Loop (HITL)</p>
+            <p className="text-xs text-foreground/70">Autopilot for AI &mdash; the system works autonomously but pauses at critical decision points for human review.</p>
+          </div>
+        </div>
+      </div>
+
       {/* Session info */}
       <p className="text-center text-xs text-muted">
         Impact Engine Session &middot; {new Date().toLocaleDateString()}

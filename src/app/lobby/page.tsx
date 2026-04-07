@@ -6,29 +6,9 @@ import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { generatePlayerId } from "@/lib/game-utils";
 import { isTestMode } from "@/lib/test-mode";
+import { QUIZ_QUESTIONS, getRandomSpotlight, type AITerm } from "@/lib/ai-knowledge";
 import TestModePanel from "@/components/TestModePanel";
 import type { Player, GameSession } from "@/lib/database.types";
-
-const WARMUP_QUESTIONS = [
-  {
-    question: "A pharmacy needs to check drug-drug, drug-disease, and drug-allergy interactions simultaneously. Which MAS pattern fits best?",
-    options: ["Sequential Pipeline", "Parallel Fan-Out", "Coordinator"],
-    answer: 1,
-    explanation: "Parallel Fan-Out lets multiple sub-agents work independently on each interaction type, then a synthesizer aggregates results \u2014 much faster than checking sequentially.",
-  },
-  {
-    question: "What does the 'M' in the IMPACT framework stand for?",
-    options: ["Measurable", "Meaningful", "Minimal"],
-    answer: 1,
-    explanation: "Meaningful \u2014 does the strategy drive real business value like Star Ratings, adherence improvements, or revenue?",
-  },
-  {
-    question: "A patient support bot needs to route billing questions vs. clinical medication questions to different specialists. Which pattern?",
-    options: ["Sequential Pipeline", "Parallel Fan-Out", "Coordinator / Dispatcher"],
-    answer: 2,
-    explanation: "A Coordinator routes incoming requests to the right specialized sub-agent based on the type of question.",
-  },
-];
 
 export default function LobbyPage() {
   return (
@@ -59,9 +39,11 @@ function LobbyContent() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [testMode] = useState(() => isTestMode());
+  const [shuffledQuestions] = useState(() => [...QUIZ_QUESTIONS].sort(() => Math.random() - 0.5));
+  const [spotlight, setSpotlight] = useState<AITerm>(() => getRandomSpotlight());
   const playerId = typeof window !== "undefined" ? generatePlayerId() : "";
 
-  const quiz = WARMUP_QUESTIONS[quizIndex % WARMUP_QUESTIONS.length];
+  const quiz = shuffledQuestions[quizIndex % shuffledQuestions.length];
 
   const fetchData = useCallback(async () => {
     if (!sessionId) return;
@@ -145,6 +127,7 @@ function LobbyContent() {
     setQuizIndex((prev) => prev + 1);
     setSelectedAnswer(null);
     setShowExplanation(false);
+    setSpotlight(getRandomSpotlight());
   }
 
   if (!sessionId) {
@@ -224,7 +207,7 @@ function LobbyContent() {
               <Image src="/images/lobby-lounge.png" alt="" width={32} height={32} className="rounded-lg" style={{ width: 32, height: 'auto' }} />
               <h3 className="text-sm font-semibold text-secondary">Warmup Challenge</h3>
             </div>
-            <span className="text-xs text-muted">Q{(quizIndex % WARMUP_QUESTIONS.length) + 1}/{WARMUP_QUESTIONS.length}</span>
+            <span className="text-xs text-muted">Q{(quizIndex % shuffledQuestions.length) + 1}/{shuffledQuestions.length}</span>
           </div>
           <p className="text-sm font-medium">{quiz.question}</p>
           <div className="space-y-2">
@@ -261,6 +244,17 @@ function LobbyContent() {
               </button>
             </div>
           )}
+        </div>
+
+        {/* AI Term Spotlight */}
+        <div className="glass-card p-4 space-y-2 animate-slide-up border-l-4 border-secondary">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-secondary">AI Term Spotlight</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-secondary/20 text-secondary font-medium">{spotlight.category}</span>
+          </div>
+          <p className="text-sm font-semibold text-foreground">{spotlight.term}</p>
+          <p className="text-sm text-foreground/80">{spotlight.definition}</p>
+          <p className="text-xs text-accent italic">{spotlight.analogy}</p>
         </div>
 
         {/* Actions */}
